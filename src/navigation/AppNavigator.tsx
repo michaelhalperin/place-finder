@@ -12,6 +12,7 @@ import { PlaceDetailsScreen } from "../screens/PlaceDetails";
 import { SettingsScreen } from "../screens/SettingsScreen";
 import { RootStackParamList } from "../types/types";
 import { useTheme } from "../theme/ThemeContext";
+import { SortDropdown } from "../components/SortDropdown";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -51,21 +52,24 @@ const TabNavigator = () => {
         tabBarInactiveTintColor: colors.textSecondary,
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Map" component={MapScreen} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerRight: () => <SortDropdown />,
+        }}
+      />
+      <Tab.Screen
+        name="Map"
+        component={MapScreen}
+        options={{ headerShown: false }}
+      />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={({ navigation }) => ({
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Settings")}
-              style={{ marginRight: 16 }}
-            >
-              <Ionicons name="settings-outline" size={24} color={colors.icon} />
-            </TouchableOpacity>
-          ),
-        })}
+        options={{ headerShown: false }}
       />
     </Tab.Navigator>
   );
@@ -75,7 +79,7 @@ export const AppNavigator = () => {
   const { colors } = useTheme();
 
   return (
-    <Stack.Navigator 
+    <Stack.Navigator
       screenOptions={{
         headerStyle: {
           backgroundColor: colors.background,
@@ -84,12 +88,22 @@ export const AppNavigator = () => {
         headerShadowVisible: false,
         contentStyle: {
           backgroundColor: colors.background,
-        }
+        },
       }}
     >
-      <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="Welcome"
+        component={WelcomeScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="Questionnaire" component={QuestionnaireScreen} />
-      <Stack.Screen name="Home" component={TabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="Home"
+        component={TabNavigator}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="PlaceDetails" component={PlaceDetailsScreen} />
       <Stack.Screen
         name="Settings"

@@ -555,3 +555,38 @@ export const createQuestionCardStyles = (colors: any) => StyleSheet.create({
     color: colors.surface,
   },
 });
+
+export const createSortDropdownStyles = (colors: any) =>
+  StyleSheet.create({
+    button: {
+      padding: 8,
+      marginRight: 8,
+    },
+    overlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.3)',
+    },
+    dropdown: {
+      position: 'absolute',
+      top: 50,
+      right: 10,
+      backgroundColor: colors.surface,
+      borderRadius: theme.borderRadius.medium,
+      padding: theme.spacing.sm,
+      minWidth: 180,
+      ...theme.shadows.medium,
+    },
+    option: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: theme.spacing.md,
+      borderRadius: theme.borderRadius.small,
+    },
+    icon: {
+      marginRight: theme.spacing.md,
+    },
+    optionText: {
+      ...theme.typography.body,
+      color: colors.text,
+    },
+  });
