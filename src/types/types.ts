@@ -120,11 +120,12 @@ export interface PlaceDetails extends NearbyPlace {
 
 export type UserSettings = Record<string, string>;
 
-export type Description = {
+export interface Description {
   interests: string[];
   specifics: string[];
   text: string;
-};
+  needsQuestionnaire?: boolean;
+}
 
 export interface ButtonProps {
   title: string;

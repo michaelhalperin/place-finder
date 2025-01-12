@@ -22,6 +22,14 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopColor: colors.border,
+        },
+        headerStyle: {
+          backgroundColor: colors.background,
+        },
+        headerTintColor: colors.text,
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap;
           switch (route.name) {
@@ -40,7 +48,7 @@ const TabNavigator = () => {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: "gray",
+        tabBarInactiveTintColor: colors.textSecondary,
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
@@ -64,11 +72,24 @@ const TabNavigator = () => {
 };
 
 export const AppNavigator = () => {
+  const { colors } = useTheme();
+
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Welcome" component={WelcomeScreen} />
+    <Stack.Navigator 
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: colors.background,
+        },
+        headerTintColor: colors.text,
+        headerShadowVisible: false,
+        contentStyle: {
+          backgroundColor: colors.background,
+        }
+      }}
+    >
+      <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Questionnaire" component={QuestionnaireScreen} />
-      <Stack.Screen name="Home" component={TabNavigator} />
+      <Stack.Screen name="Home" component={TabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="PlaceDetails" component={PlaceDetailsScreen} />
       <Stack.Screen
         name="Settings"

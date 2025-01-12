@@ -12,6 +12,7 @@ export const theme = {
       success: "#2ECC71",
       border: "#E1E8ED",
       icon: "#666666",
+      rating: '#FFB800',
     },
     dark: {
       primary: "#4A90E2",
@@ -24,7 +25,8 @@ export const theme = {
       error: "#E74C3C",
       success: "#2ECC71",
       border: "#404040",
-      icon: "#2B2323FF",
+      icon: "#FCF1F1FF",
+      rating: '#FFB800',
     },
   },
   spacing: {
@@ -74,6 +76,13 @@ export const theme = {
       shadowOpacity: 0.15,
       shadowRadius: 8,
       elevation: 4,
+    },
+    large: {
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.15,
+      shadowRadius: 12,
+      elevation: 8,
     },
   },
 } as const;

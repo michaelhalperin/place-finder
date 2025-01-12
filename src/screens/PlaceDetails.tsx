@@ -1,13 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, Image, ScrollView } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { theme } from '../theme';
 import { RootStackParamList } from '../types/types';
+import { useTheme } from '@/theme/ThemeContext';
+import { createPlaceDetailsStyles } from '@/theme/constants';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PlaceDetails'>;
 
 export const PlaceDetailsScreen: React.FC<Props> = ({ route }) => {
   const { placeData } = route.params;
+  const { colors } = useTheme();
+  const styles = createPlaceDetailsStyles(colors);
 
   return (
     <ScrollView style={styles.container}>
@@ -49,52 +52,3 @@ export const PlaceDetailsScreen: React.FC<Props> = ({ route }) => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  image: {
-    width: '100%',
-    height: 250,
-  },
-  content: {
-    padding: theme.spacing.lg,
-  },
-  name: {
-    ...theme.typography.h1,
-    marginBottom: theme.spacing.sm,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: theme.spacing.lg,
-  },
-  rating: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFB800',
-    marginRight: theme.spacing.md,
-  },
-  distance: {
-    fontSize: 16,
-    color: theme.colors.text,
-    opacity: 0.7,
-  },
-  section: {
-    marginBottom: theme.spacing.lg,
-  },
-  sectionTitle: {
-    ...theme.typography.h2,
-    marginBottom: theme.spacing.sm,
-  },
-  sectionText: {
-    ...theme.typography.body,
-    lineHeight: 24,
-  },
-  feature: {
-    ...theme.typography.body,
-    marginBottom: theme.spacing.xs,
-  },
-});

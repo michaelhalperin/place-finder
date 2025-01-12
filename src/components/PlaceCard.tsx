@@ -3,65 +3,16 @@ import {
   View,
   Text,
   Image,
-  StyleSheet,
   Pressable,
   Linking,
 } from "react-native";
 import { PlaceCardProps } from "@/types/types";
-import { theme } from "../theme";
 import { useTheme } from "@/theme/ThemeContext";
+import { createPlaceCardStyles } from "@/theme/constants";
 
 export const PlaceCard: React.FC<PlaceCardProps> = ({ place, onPress }) => {
   const { colors } = useTheme();
-
-  const styles = StyleSheet.create({
-    container: {
-      backgroundColor: "white",
-      borderRadius: theme.borderRadius.medium,
-      overflow: "hidden",
-      marginBottom: theme.spacing.md,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 8,
-      elevation: 3,
-    },
-    image: {
-      width: "100%",
-      height: 200,
-    },
-    content: {
-      padding: theme.spacing.md,
-    },
-    name: {
-      ...theme.typography.h2,
-      marginBottom: theme.spacing.xs,
-    },
-    rating: {
-      ...theme.typography.body,
-      color: colors.text,
-      marginBottom: theme.spacing.xs,
-    },
-    description: {
-      ...theme.typography.body,
-      color: colors.text,
-      opacity: 0.8,
-    },
-    distance: {
-      ...theme.typography.caption,
-      color: colors.primary,
-      marginTop: theme.spacing.xs,
-    },
-    website: {
-      ...theme.typography.caption,
-      color: colors.text,
-      marginTop: theme.spacing.xs,
-    },
-    link: {
-      color: colors.primary,
-      textDecorationLine: "underline",
-    },
-  });
+  const styles = createPlaceCardStyles(colors);
 
   return (
     <Pressable onPress={onPress} style={styles.container}>

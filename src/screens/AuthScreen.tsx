@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput } from 'react-native';
 import { Button } from '../components/Button';
-import { theme } from '../theme';
+import { useTheme } from "@/theme/ThemeContext";
+import { createAuthStyles } from "@/theme/constants";
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Auth'>;
 
 export const AuthScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors } = useTheme();
+  const styles = createAuthStyles(colors);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -45,32 +48,3 @@ export const AuthScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: theme.spacing.lg,
-    backgroundColor: theme.colors.background,
-    justifyContent: 'center',
-  },
-  title: {
-    ...theme.typography.h1,
-    marginBottom: theme.spacing.xl,
-    textAlign: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-    borderRadius: theme.borderRadius.small,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-  },
-  button: {
-    marginTop: theme.spacing.md,
-  },
-  link: {
-    color: theme.colors.primary,
-    textAlign: 'center',
-    marginTop: theme.spacing.lg,
-  },
-});

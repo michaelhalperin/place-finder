@@ -1,14 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, Animated, Pressable } from 'react-native';
 import { QuestionCardProps } from '@/types/types';
-import { theme } from '../theme';
+import { useTheme } from '@/theme/ThemeContext';
+import { createQuestionCardStyles } from '@/theme/constants';
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({
   question,
   options,
   onSelect,
-  selectedOption
+  selectedOption,
 }) => {
+  const { colors } = useTheme();
+  const styles = createQuestionCardStyles(colors);
+
   return (
     <View style={styles.container}>
       <Text style={styles.question}>{question}</Text>
@@ -17,48 +21,21 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           key={option.id}
           style={styles.optionContainer}
         >
-          <Text 
-            style={[
-              styles.option,
-              selectedOption === option.id && styles.selectedOption
-            ]}
+          <Pressable
             onPress={() => onSelect(option.id)}
+            android_ripple={{ color: colors.primary + '20' }}
           >
-            {option.label}
-          </Text>
+            <Text 
+              style={[
+                styles.option,
+                selectedOption === option.id && styles.selectedOption
+              ]}
+            >
+              {option.label}
+            </Text>
+          </Pressable>
         </Animated.View>
       ))}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: theme.spacing.lg,
-    backgroundColor: 'white',
-    borderRadius: theme.borderRadius.medium,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  question: {
-    ...theme.typography.h2,
-    marginBottom: theme.spacing.lg,
-  },
-  optionContainer: {
-    marginBottom: theme.spacing.md,
-  },
-  option: {
-    ...theme.typography.body,
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.small,
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-  },
-  selectedOption: {
-    backgroundColor: theme.colors.primary,
-    color: 'white',
-  },
-});
