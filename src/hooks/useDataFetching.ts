@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { gptApi } from '../api/gpt';
 import { placesApi } from '../api/api';
-import { GPTResponse, UserPreferences } from '../types/types';
+import { UserSettings } from '../types/types';
 
 export const useDataFetching = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // GPT-related fetching
-  const fetchQuestions = async (userPreferences?: UserPreferences) => {
+  const fetchQuestions = async (userPreferences?: UserSettings) => {
     try {
       setLoading(true);
       setError(null);

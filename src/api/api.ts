@@ -1,54 +1,9 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError } from "axios";
+import { API_KEY } from "@env";
+import { NearbyPlace, PlaceDetails } from "../types/types";
 
-const BASE_URL = 'https://maps.googleapis.com/maps/api/place';
+const BASE_URL = "https://maps.googleapis.com/maps/api/place";
 const TIMEOUT = 10000; // 10 seconds
-
-const GOOGLE_PLACES_API_KEY = ""
-
-interface Location {
-  lat: number;
-  lng: number;
-}
-
-interface Geometry {
-  location: Location;
-  viewport?: {
-    northeast: Location;
-    southwest: Location;
-  };
-}
-
-interface NearbyPlace {
-  place_id: string;
-  name: string;
-  geometry: Geometry;
-  vicinity: string;
-  rating?: number;
-  user_ratings_total?: number;
-  photos?: Array<{
-    photo_reference: string;
-    height: number;
-    width: number;
-  }>;
-  opening_hours?: {
-    open_now: boolean;
-  };
-  types: string[];
-}
-
-interface PlaceDetails extends NearbyPlace {
-  formatted_address: string;
-  formatted_phone_number?: string;
-  website?: string;
-  reviews?: Array<{
-    author_name: string;
-    rating: number;
-    text: string;
-    time: number;
-  }>;
-  price_level?: number;
-  international_phone_number?: string;
-}
 
 // Custom error class
 class ApiError extends Error {
@@ -58,7 +13,7 @@ class ApiError extends Error {
     public code?: string
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
@@ -81,14 +36,14 @@ export const placesApi = {
           radius,
           type,
           keyword,
-          key: GOOGLE_PLACES_API_KEY,
+          key: API_KEY,
         },
         timeout: TIMEOUT,
       });
 
-      if (response.data.status !== 'OK') {
+      if (response.data.status !== "OK") {
         throw new ApiError(
-          response.data.error_message || 'Failed to fetch nearby places',
+          response.data.error_message || "Failed to fetch nearby places",
           response.status,
           response.data.status
         );
@@ -97,16 +52,16 @@ export const placesApi = {
       return response.data.results;
     } catch (error) {
       if (error instanceof AxiosError) {
-        if (error.code === 'ECONNABORTED') {
-          throw new ApiError('Request timed out. Please try again.');
+        if (error.code === "ECONNABORTED") {
+          throw new ApiError("Request timed out. Please try again.");
         }
         if (error.response) {
           throw new ApiError(
-            'Server error. Please try again later.',
+            "Server error. Please try again later.",
             error.response.status
           );
         }
-        throw new ApiError('Network error. Please check your connection.');
+        throw new ApiError("Network error. Please check your connection.");
       }
       throw error;
     }
@@ -117,26 +72,26 @@ export const placesApi = {
       const response = await axios.get(`${BASE_URL}/details/json`, {
         params: {
           place_id: placeId,
-          key: GOOGLE_PLACES_API_KEY,
+          key: API_KEY,
           fields: [
-            'name',
-            'formatted_address',
-            'geometry',
-            'photos',
-            'rating',
-            'formatted_phone_number',
-            'website',
-            'opening_hours',
-            'reviews',
-            'price_level',
-          ].join(','),
+            "name",
+            "formatted_address",
+            "geometry",
+            "photos",
+            "rating",
+            "formatted_phone_number",
+            "website",
+            "opening_hours",
+            "reviews",
+            "price_level",
+          ].join(","),
         },
         timeout: TIMEOUT,
       });
 
-      if (response.data.status !== 'OK') {
+      if (response.data.status !== "OK") {
         throw new ApiError(
-          response.data.error_message || 'Failed to fetch place details',
+          response.data.error_message || "Failed to fetch place details",
           response.status,
           response.data.status
         );
@@ -145,16 +100,16 @@ export const placesApi = {
       return response.data.result;
     } catch (error) {
       if (error instanceof AxiosError) {
-        if (error.code === 'ECONNABORTED') {
-          throw new ApiError('Request timed out. Please try again.');
+        if (error.code === "ECONNABORTED") {
+          throw new ApiError("Request timed out. Please try again.");
         }
         if (error.response) {
           throw new ApiError(
-            'Server error. Please try again later.',
+            "Server error. Please try again later.",
             error.response.status
           );
         }
-        throw new ApiError('Network error. Please check your connection.');
+        throw new ApiError("Network error. Please check your connection.");
       }
       throw error;
     }
@@ -162,6 +117,36 @@ export const placesApi = {
 
   // Helper method to get photo URL
   getPhotoUrl(photoReference: string, maxWidth: number = 400): string {
-    return `${BASE_URL}/photo?maxwidth=${maxWidth}&photo_reference=${photoReference}&key=${GOOGLE_PLACES_API_KEY}`;
+    return `${BASE_URL}/photo?maxwidth=${maxWidth}&photo_reference=${photoReference}&key=${API_KEY}`;
   },
+
+  getNearbyPlacesWithWebsites,
 };
+
+async function getNearbyPlacesWithWebsites(
+  latitude: number,
+  longitude: number
+) {
+  try {
+    // First get nearby places
+    const nearbyPlaces = await placesApi.searchNearby(latitude, longitude);
+
+    // Map the results to include website data
+    const placesWithDetails = await Promise.all(
+      nearbyPlaces.map(async (place) => {
+        const details = await placesApi.getPlaceDetails(place.place_id);
+        return {
+          ...place,
+          website: details.website || null,
+          phone: details.formatted_phone_number || null,
+          opening_hours: details.opening_hours || null,
+        };
+      })
+    );
+
+    return placesWithDetails;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+}
