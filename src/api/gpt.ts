@@ -1,7 +1,7 @@
 import 'openai/shims/web';
 import OpenAI from "openai";
 import { OPENAI_API_KEY } from "@env";
-import { GPTResponse, UserPreferences } from "@/types/types";
+import { GPTResponse, UserSettings } from "@/types/types";
 
 const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
@@ -10,7 +10,7 @@ const openai = new OpenAI({
 
 export const gptApi = {
   async generateQuestions(
-    userPreferences?: UserPreferences
+    userPreferences?: UserSettings
   ): Promise<GPTResponse> {
     try {
       console.log("1. Starting generateQuestions...");

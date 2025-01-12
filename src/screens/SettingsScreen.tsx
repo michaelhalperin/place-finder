@@ -64,7 +64,7 @@ const SettingsToggle: React.FC<SettingsToggleProps> = ({
   </View>
 );
 
-export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
+export const SettingsScreen: React.FC<Props> = () => {
   const { isDarkMode, toggleTheme } = useThemeContext();
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
   const [isLocationEnabled, setIsLocationEnabled] = useState(true);
@@ -212,8 +212,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
   },
   settingInfo: {
     flexDirection: "row",
@@ -239,8 +237,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
   },
   chevron: {
     color: "#666",

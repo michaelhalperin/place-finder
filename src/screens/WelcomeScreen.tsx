@@ -27,7 +27,7 @@ export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.buttonContainer}>
           <Button
             title="Get Started"
-            onPress={() => navigation.navigate('Questionnaire')}
+            onPress={() => navigation.navigate('Home', {})}
             variant="primary"
             size="large"
           />

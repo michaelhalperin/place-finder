@@ -13,7 +13,7 @@ export const AuthScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleLogin = () => {
     // Add authentication logic here
-    navigation.navigate('Questionnaire');
+    navigation.navigate('Home', {});
   };
 
   return (
