@@ -1,132 +1,77 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { Button } from "../components/Button";
-import { theme } from "../theme";
-import { getPersonalizedDescription } from "@/utils/recommendations";
+import { View, Text, ScrollView } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList, UserSettings } from "../types/types";
+import { Button } from "../components/Button";
 import { Chip } from "../components/Chip";
-import { useTheme } from "../theme/ThemeContext";
+import { getPersonalizedDescription } from "@/utils/recommendations";
+import { SafeAreaContainer } from "../components/layout/SafeAreaContainer";
+import { ContentContainer } from "../components/layout/ContentContainer";
+import { ProfileAvatar } from "../components/layout/ProfileAvatar";
+import { ProfileSection } from "../components/layout/ProfileSection";
+import { createProfileStyles } from "../theme/constants";
+import { theme } from "@/theme";
+import { useTheme } from "@/theme/ThemeContext";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
-export const ProfileScreen: React.FC<Props> = ({ route }) => {
-  const { colors } = useTheme();
+export const ProfileScreen: React.FC<Props> = ({ route, navigation }) => {
   const userAnswers = route.params?.userAnswers as UserSettings;
   const personalizedDescription = getPersonalizedDescription(userAnswers);
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    header: {
-      alignItems: "center",
-      padding: theme.spacing.xl,
-    },
-    avatarContainer: {
-      width: 100,
-      height: 100,
-      borderRadius: 50,
-      backgroundColor: colors.primary,
-      alignItems: "center",
-      justifyContent: "center",
-      marginBottom: theme.spacing.md,
-    },
-    avatarText: {
-      color: "white",
-      fontSize: 36,
-      fontWeight: "bold",
-    },
-    name: {
-      ...theme.typography.h2,
-      color: colors.text,
-      marginBottom: theme.spacing.xs,
-    },
-    email: {
-      ...theme.typography.body,
-      color: colors.text,
-      opacity: 0.8,
-    },
-    section: {
-      padding: theme.spacing.lg,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
-    },
-    sectionTitle: {
-      ...theme.typography.h2,
-      color: colors.text,
-      marginBottom: theme.spacing.md,
-    },
-    preferenceItem: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      paddingVertical: theme.spacing.sm,
-    },
-    preferenceValue: {
-      color: colors.primary,
-    },
-    button: {
-      margin: theme.spacing.lg,
-    },
-    description: {
-      ...theme.typography.body,
-      color: colors.text,
-      lineHeight: 24,
-    },
-    chipContainer: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      marginBottom: theme.spacing.sm,
-    },
-  });
+  const { colors } = useTheme();
+  const styles = createProfileStyles(colors);
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.avatarContainer}>
-          <Text style={styles.avatarText}>JD</Text>
+    <SafeAreaContainer>
+      <ContentContainer scrollable>
+        <View style={styles.header}>
+          <ProfileAvatar styles={styles} initials="JD" />
+          <Text style={styles.name}>John Doe</Text>
+          <Text style={styles.email}>john.doe@example.com</Text>
         </View>
-        <Text style={styles.name}>John Doe</Text>
-        <Text style={styles.email}>john.doe@example.com</Text>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>About You</Text>
-        <View style={styles.chipContainer}>
-          {personalizedDescription.interests.map((interest) => (
-            <Chip key={interest} label={interest} />
-          ))}
-          {personalizedDescription.specifics.map((specific) => (
-            <Chip key={specific} label={specific} />
-          ))}
-        </View>
-        <Text style={styles.description}>{personalizedDescription.text}</Text>
-      </View>
+        <ProfileSection styles={styles.sectionTitle} title="About You">
+          <View style={styles.chipContainer}>
+            {personalizedDescription.interests.map((interest) => (
+              <Chip key={interest} label={interest} />
+            ))}
+            {personalizedDescription.specifics.map((specific) => (
+              <Chip key={specific} label={specific} />
+            ))}
+          </View>
+          <Text style={styles.description}>{personalizedDescription.text}</Text>
+          {personalizedDescription.needsQuestionnaire && (
+            <Button
+              title="Start Quick Quiz"
+              onPress={() => navigation.navigate("Questionnaire")}
+              variant="secondary"
+            />
+          )}
+        </ProfileSection>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Preferences</Text>
-        <View style={styles.preferenceItem}>
-          <Text style={styles.description}>Food Types</Text>
-          <Text style={styles.preferenceValue}>Italian, Japanese</Text>
-        </View>
-        <View style={styles.preferenceItem}>
-          <Text style={styles.description}>Activities</Text>
-          <Text style={styles.preferenceValue}>Outdoor, Cultural</Text>
-        </View>
-      </View>
+        <ProfileSection styles={styles.sectionTitle} title="Preferences">
+          <View style={styles.preferenceItem}>
+            <Text style={styles.preferenceLabel}>Food Types</Text>
+            <Text style={styles.preferenceValue}>Italian, Japanese</Text>
+          </View>
+          <View style={styles.preferenceItem}>
+            <Text style={styles.preferenceLabel}>Activities</Text>
+            <Text style={styles.preferenceValue}>Outdoor, Cultural</Text>
+          </View>
+        </ProfileSection>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Saved Places</Text>
-        {/* Add saved places list here */}
-      </View>
+        <ProfileSection styles={styles.sectionTitle} title="Saved Places">
+          <Text style={styles.description}>no saved places yet</Text>
+          {/* Add saved places list here */}
+        </ProfileSection>
 
-      <Button
-        title="Edit Profile"
-        onPress={() => {}}
-        variant="secondary"
-        style={styles.button}
-      />
-    </ScrollView>
+        <Button
+          title="Edit Profile"
+          onPress={() => {}}
+          variant="secondary"
+          style={{ margin: theme.spacing.lg }}
+        />
+      </ContentContainer>
+    </SafeAreaContainer>
   );
 };

@@ -53,11 +53,12 @@ export function getPersonalizedDescription(
   userAnswers: UserSettings
 ): Description {
   const { searchTerm } = getRecommendations(userAnswers, []);
-  if (!userAnswers) {
+  if (!userAnswers || Object.keys(userAnswers).length === 0) {
     return {
       interests: [],
       specifics: [],
       text: "Complete the questionnaire to get personalized recommendations.",
+      needsQuestionnaire: true,
     };
   }
   const interests = searchTerm.split(",").map((term) => term.trim());
@@ -66,5 +67,6 @@ export function getPersonalizedDescription(
     interests,
     specifics: [],
     text: `Based on your preferences, we've picked these activities for you.`,
+    needsQuestionnaire: false,
   };
 }

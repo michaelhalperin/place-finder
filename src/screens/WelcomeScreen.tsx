@@ -1,13 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../components/Button';
-import { theme } from '../theme';
+import { useTheme } from "@/theme/ThemeContext";
+import { createWelcomeStyles } from "@/theme/constants";
 import { RootStackParamList } from '../types/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
 export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors } = useTheme();
+  const styles = createWelcomeStyles(colors);
+  
   return (
     <View style={styles.container}>
       <Image
@@ -36,45 +40,3 @@ export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  backgroundImage: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding: theme.spacing.lg,
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: theme.spacing.xxl * 3.2,
-  },
-  image: {
-    width: 250,
-    height: 250,
-    marginBottom: theme.spacing.xl,
-  },
-  title: {
-    ...theme.typography.h1,
-    textAlign: 'center',
-    marginBottom: theme.spacing.md,
-    color: '#fff',
-  },
-  subtitle: {
-    ...theme.typography.body,
-    textAlign: 'center',
-    color: '#fff',
-    opacity: 0.8,
-  },
-  buttonContainer: {
-    paddingBottom: theme.spacing.xl,
-  },
-});

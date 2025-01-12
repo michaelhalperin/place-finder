@@ -14,7 +14,8 @@ import { Activity, RootStackParamList } from "../types/types";
 import { placesApi } from "../api/api";
 import { getRecommendations } from "../utils/recommendations";
 import { useLocation } from "../hooks/useLocation";
-import { useTheme } from "../theme/ThemeContext";
+import { useTheme } from "@/theme/ThemeContext";
+import { createHomeStyles } from "@/theme/constants";
 
 type HomeScreenRouteProp = RouteProp<RootStackParamList, "User">;
 
@@ -32,24 +33,26 @@ export const HomeScreen = () => {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<HomeScreenRouteProp>();
   const userAnswers = route.params?.userAnswers;
+  const styles = createHomeStyles(colors);
 
+  
   useEffect(() => {
     const fetchPlaces = async () => {
       if (!latitude || !longitude) return;
-
+      
       try {
         const nearbyPlaces = await placesApi.getNearbyPlacesWithWebsites(
           latitude,
           longitude
         );
-
+        
         const activities = nearbyPlaces.map((place) => ({
           id: place.place_id,
           name: place.name,
           rating: place.rating || 0,
           image: place.photos?.[0]
-            ? placesApi.getPhotoUrl(place.photos[0].photo_reference)
-            : "https://picsum.photos/400/200",
+          ? placesApi.getPhotoUrl(place.photos[0].photo_reference)
+          : "https://picsum.photos/400/200",
           description: place.vicinity || "",
           distance: "",
           address: place.vicinity || "",
@@ -62,11 +65,11 @@ export const HomeScreen = () => {
           website: place.website || null,
           phone: place.phone || null,
         }));
-
+        
         const recommendedPlaces = userAnswers
-          ? getRecommendations(userAnswers, activities).recommendations
-          : activities;
-
+        ? getRecommendations(userAnswers, activities).recommendations
+        : activities;
+        
         setPlaces(recommendedPlaces);
       } catch (error) {
         console.error("Failed to fetch places:", error);
@@ -79,33 +82,6 @@ export const HomeScreen = () => {
   }, [latitude, longitude, userAnswers]);
 
   const isLoading = loading || locationLoading;
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    header: {
-      padding: theme.spacing.lg,
-      backgroundColor: colors.primary,
-    },
-    headerTitle: {
-      ...theme.typography.h2,
-      color: "white",
-    },
-    listContent: {
-      padding: theme.spacing.md,
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    errorText: {
-      ...theme.typography.errorText,
-      color: colors.error,
-    },
-  });
 
   return (
     <View style={styles.container}>

@@ -1,17 +1,10 @@
 import React, { useState, useRef } from "react";
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Text,
-  SafeAreaView,
-  Animated,
-} from "react-native";
+import { View, Text, ScrollView, SafeAreaView, Animated } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { QuestionCard } from "../components/QuestionCard";
 import { Button } from "../components/Button";
-import { theme } from "../theme";
 import { useTheme } from "../theme/ThemeContext";
+import { createQuestionnaireStyles } from "@/theme/constants";
 import { RootStackParamList } from "@/types/types";
 import { INITIAL_QUESTIONS } from "@/utils/questions";
 
@@ -19,6 +12,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Questionnaire">;
 
 export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
   const { colors } = useTheme();
+  const styles = createQuestionnaireStyles(colors);
   const [currentQuestionId, setCurrentQuestionId] = useState("q1");
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [questions, setQuestions] = useState([INITIAL_QUESTIONS["q1"]]);
@@ -91,72 +85,6 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const progress = (Object.keys(answers).length / 5) * 100;
-
-  const styles = StyleSheet.create({
-    safeArea: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    container: {
-      flex: 1,
-    },
-    header: {
-      padding: theme.spacing.lg,
-      backgroundColor: "white",
-      borderBottomWidth: 1,
-      borderBottomColor: colors.background,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    title: {
-      ...theme.typography.h2,
-      marginBottom: theme.spacing.md,
-      color: colors.primary,
-    },
-    progressContainer: {
-      height: 6,
-      backgroundColor: "#E0E0E0",
-      borderRadius: 3,
-      marginBottom: theme.spacing.sm,
-    },
-    progressBar: {
-      height: "100%",
-      backgroundColor: colors.primary,
-      borderRadius: 3,
-    },
-    progressText: {
-      ...theme.typography.caption,
-      color: colors.text,
-      opacity: 0.7,
-    },
-    scrollView: {
-      flex: 1,
-      padding: theme.spacing.md,
-    },
-    scrollContent: {
-      paddingBottom: theme.spacing.xl,
-    },
-    buttonContainer: {
-      padding: theme.spacing.lg,
-      backgroundColor: "white",
-      borderTopWidth: 1,
-      borderTopColor: colors.background,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: -2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    button: {
-      borderRadius: theme.borderRadius.medium,
-    },
-    questionContainer: {
-      marginBottom: theme.spacing.md,
-    },
-  });
 
   return (
     <SafeAreaView style={styles.safeArea}>
