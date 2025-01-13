@@ -35,9 +35,6 @@ export const ProfileScreen: React.FC<Props> = ({ route, navigation }) => {
             {personalizedDescription.interests.map((interest) => (
               <Chip key={interest} label={interest} />
             ))}
-            {personalizedDescription.specifics.map((specific) => (
-              <Chip key={specific} label={specific} />
-            ))}
           </View>
           <Text style={styles.description}>{personalizedDescription.text}</Text>
           {personalizedDescription.needsQuestionnaire && (

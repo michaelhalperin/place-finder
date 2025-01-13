@@ -57,12 +57,13 @@ const TabNavigator = () => {
       })}
     >
       <Tab.Screen
-        name="Home"
+        name="HomeTab"
         component={HomeScreen}
         options={{
           headerShown: true,
           headerTitle: "",
           headerRight: () => <SortDropdown />,
+          tabBarLabel: "Home",
         }}
       />
       <Tab.Screen
