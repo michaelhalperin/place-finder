@@ -40,7 +40,10 @@ export type RootStackParamList = {
   EditProfile: undefined;
 };
 
-export type TabStackParamList = Pick<RootStackParamList, 'Home' | 'Map' | 'Profile'>;
+export type TabStackParamList = Pick<
+  RootStackParamList,
+  "Home" | "Map" | "Profile"
+>;
 
 export interface PlaceCardProps {
   place: BasePlace;
@@ -62,7 +65,7 @@ export interface Question {
 
 export interface QuestionCardProps {
   question: string;
-  options: Pick<QuestionOption, 'id' | 'label' | 'icon'>[];
+  options: Pick<QuestionOption, "id" | "label" | "icon">[];
   onSelect: (optionId: string) => void;
   selectedOption?: string;
   isActive?: boolean;

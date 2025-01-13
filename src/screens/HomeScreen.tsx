@@ -31,17 +31,13 @@ export const HomeScreen = () => {
   const styles = createHomeStyles(colors);
   const { sortType } = useSortContext();
 
-  // ******************** disable for now *******************//
-  // useEffect(() => {
-  //   // Simply set the places based on recommendations or all mock places
-  //   const recommendedPlaces = userAnswers
-  //     ? getRecommendations(userAnswers, mockPlaces).recommendations
-  //     : mockPlaces;
+  useEffect(() => {
+    const recommendedPlaces = userAnswers
+      ? getRecommendations(userAnswers, mockPlaces).recommendations
+      : mockPlaces;
 
-  //   setPlaces(recommendedPlaces);
-  // }, [userAnswers]);
-  // ******************** disable for now *******************//
-
+    setPlaces(recommendedPlaces);
+  }, [userAnswers]);
 
   // sorting logic
   const sortedPlaces = useMemo(() => {

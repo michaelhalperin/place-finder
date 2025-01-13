@@ -19,6 +19,7 @@ export const Button: React.FC<ButtonProps> = ({
       borderRadius: theme.borderRadius.medium,
       alignItems: "center",
       justifyContent: "center",
+      marginTop: theme.spacing.md,
     },
     primary: {
       backgroundColor: colors.primary,
