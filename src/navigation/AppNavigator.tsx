@@ -13,6 +13,7 @@ import { SettingsScreen } from "../screens/SettingsScreen";
 import { RootStackParamList } from "../types/types";
 import { useTheme } from "../theme/ThemeContext";
 import { SortDropdown } from "../components/SortDropdown";
+import { EditProfileScreen } from "@/screens/EditProfileScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -124,6 +125,11 @@ export const AppNavigator = () => {
           headerShown: true,
           title: "Settings",
         }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{ title: "Edit Profile", headerShown: false }}
       />
     </Stack.Navigator>
   );

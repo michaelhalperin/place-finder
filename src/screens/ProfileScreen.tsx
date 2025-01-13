@@ -67,7 +67,7 @@ export const ProfileScreen: React.FC<Props> = ({ route, navigation }) => {
 
         <Button
           title="Edit Profile"
-          onPress={() => {}}
+          onPress={() => navigation.navigate('EditProfile')}
           variant="secondary"
           style={{ margin: theme.spacing.lg }}
         />
