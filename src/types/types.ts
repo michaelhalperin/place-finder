@@ -26,6 +26,7 @@ interface BaseParams {
 export type RootStackParamList = {
   Welcome: undefined;
   Home: BaseParams;
+  HomeTab: BaseParams;
   Questionnaire: undefined;
   Profile: BaseParams;
   Settings: undefined;

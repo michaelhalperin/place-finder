@@ -24,21 +24,26 @@ export const HomeScreen = () => {
     loading: locationLoading,
     error: locationError,
   } = useLocation();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<HomeScreenRouteProp>();
   const userAnswers = route.params?.userAnswers;
   const styles = createHomeStyles(colors);
   const { sortType } = useSortContext();
 
-  useEffect(() => {
-    // Simply set the places based on recommendations or all mock places
-    const recommendedPlaces = userAnswers
-      ? getRecommendations(userAnswers, mockPlaces).recommendations
-      : mockPlaces;
-    
-    setPlaces(recommendedPlaces);
-  }, [userAnswers]);
+  // ******************** disable for now *******************//
+  // useEffect(() => {
+  //   // Simply set the places based on recommendations or all mock places
+  //   const recommendedPlaces = userAnswers
+  //     ? getRecommendations(userAnswers, mockPlaces).recommendations
+  //     : mockPlaces;
 
+  //   setPlaces(recommendedPlaces);
+  // }, [userAnswers]);
+  // ******************** disable for now *******************//
+
+
+  // sorting logic
   const sortedPlaces = useMemo(() => {
     return [...places].sort((a, b) => {
       switch (sortType) {

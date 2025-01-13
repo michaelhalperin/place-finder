@@ -7,31 +7,23 @@ export function getRecommendations(
   if (!userAnswers || !activities.length) {
     return { searchTerm: "", recommendations: activities };
   }
-
-  // Score each activity based on matching criteria
-  const scoredActivities = activities.map(activity => {
+  const scoredActivities = activities.map((activity) => {
     let score = 0;
 
-    // Match tags with user preferences
-    if (activity.tags.some(tag => tag.includes(userAnswers.q1?.toLowerCase()))) {
+    if (
+      activity.tags.some((tag) => tag.includes(userAnswers.q1?.toLowerCase()))
+    ) {
       score += 3;
     }
-    
-    // Match difficulty
     if (activity.difficulty === userAnswers.q3) {
       score += 2;
     }
-
-    // Match duration
     if (activity.duration === userAnswers.q4) {
       score += 2;
     }
-
-    // Match time of day
     if (activity.timeOfDay === userAnswers.q5) {
       score += 2;
     }
-
     return { ...activity, score };
   });
 
@@ -42,7 +34,7 @@ export function getRecommendations(
 
   return {
     searchTerm: Object.values(userAnswers).filter(Boolean).join(", "),
-    recommendations
+    recommendations,
   };
 }
 
@@ -52,7 +44,6 @@ export function getRecommendations(
 export function getPersonalizedDescription(
   userAnswers: UserSettings
 ): Description {
-  const { searchTerm } = getRecommendations(userAnswers, []);
   if (!userAnswers || Object.keys(userAnswers).length === 0) {
     return {
       interests: [],
@@ -61,7 +52,11 @@ export function getPersonalizedDescription(
       needsQuestionnaire: true,
     };
   }
-  const interests = searchTerm.split(",").map((term) => term.trim());
+
+  // Extract interests directly from userAnswers instead of using getRecommendations
+  const interests = Object.values(userAnswers)
+    .filter(Boolean)
+    .map((answer) => answer.toString().trim());
 
   return {
     interests,

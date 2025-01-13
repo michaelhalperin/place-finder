@@ -132,7 +132,7 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
           <Button
             title="Continue"
             onPress={() =>
-              navigation.navigate("Home", {
+              navigation.navigate("Profile", {
                 userAnswers: answers,
               })
             }
