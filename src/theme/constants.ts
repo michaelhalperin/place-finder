@@ -590,3 +590,41 @@ export const createSortDropdownStyles = (colors: any) =>
       color: colors.text,
     },
   });
+
+export const createSkeletonStyles = (colors: any) =>
+  StyleSheet.create({
+    card: {
+      backgroundColor: colors.background,
+      borderRadius: 8,
+      marginHorizontal: 16,
+      marginVertical: 8,
+      padding: 12,
+      elevation: 2,
+    },
+    image: {
+      height: 200,
+      backgroundColor: colors.border,
+      borderRadius: 8,
+      marginBottom: 12,
+    },
+    title: {
+      height: 24,
+      backgroundColor: colors.border,
+      borderRadius: 4,
+      marginBottom: 8,
+      width: '70%' as const,
+    },
+    description: {
+      height: 16,
+      backgroundColor: colors.border,
+      borderRadius: 4,
+      marginBottom: 8,
+      width: '90%' as const,
+    },
+    shortLine: {
+      height: 16,
+      backgroundColor: colors.border,
+      borderRadius: 4,
+      width: '40%' as const,
+    },
+  });

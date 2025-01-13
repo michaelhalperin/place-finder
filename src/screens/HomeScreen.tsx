@@ -10,6 +10,7 @@ import { useLocation } from "../hooks/useLocation";
 import { useTheme } from "@/theme/ThemeContext";
 import { createHomeStyles } from "@/theme/constants";
 import { useSortContext } from "../context/SortContext";
+import { SkeletonLoader } from "../components/SkeletonLoader";
 
 type HomeScreenRouteProp = RouteProp<RootStackParamList, "User">;
 
@@ -102,9 +103,12 @@ export const HomeScreen = () => {
           <Text style={styles.errorText}>{locationError}</Text>
         </View>
       ) : isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
+        <FlatList
+          data={[1, 2]}
+          renderItem={() => <SkeletonLoader />}
+          keyExtractor={(item) => item.toString()}
+          contentContainerStyle={styles.listContent}
+        />
       ) : (
         <FlatList
           data={sortedPlaces}
