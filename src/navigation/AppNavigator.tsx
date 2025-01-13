@@ -43,6 +43,9 @@ const TabNavigator = () => {
             case "Profile":
               iconName = focused ? "person" : "person-outline";
               break;
+            case "Settings":
+              iconName = focused ? "settings" : "settings-outline";
+              break;
             default:
               iconName = "home";
           }
@@ -70,6 +73,14 @@ const TabNavigator = () => {
         name="Profile"
         component={ProfileScreen}
         options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          headerShown: true,
+          title: "Settings",
+        }}
       />
     </Tab.Navigator>
   );
