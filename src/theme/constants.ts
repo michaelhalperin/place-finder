@@ -247,19 +247,18 @@ export const createSettingsStyles = (colors: any) =>
     },
     settingItem: {
       flexDirection: "row",
-      alignItems: "center",
       justifyContent: "space-between",
       padding: theme.spacing.md,
     },
     settingInfo: {
-      flex: 0.85,
+      flex: 1,
       flexDirection: "row",
       alignItems: "flex-start",
+      marginRight: theme.spacing.md,
     },
     textContainer: {
       flex: 1,
-      flexWrap: "wrap",
-      paddingRight: theme.spacing.md,
+      marginRight: theme.spacing.md,
     },
     settingIcon: {
       marginRight: theme.spacing.md,

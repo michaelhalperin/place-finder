@@ -4,13 +4,14 @@ import { PlaceCard } from "../components/PlaceCard";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Activity, RootStackParamList } from "../types/types";
-import { placesApi } from "../api/api";
+// import { placesApi } from "../api/api";
 import { getRecommendations } from "../utils/recommendations";
 import { useLocation } from "../hooks/useLocation";
 import { useTheme } from "@/theme/ThemeContext";
 import { createHomeStyles } from "@/theme/constants";
 import { useSortContext } from "../context/SortContext";
 import { SkeletonLoader } from "../components/SkeletonLoader";
+import { mockPlaces } from "../utils/mockPlaces";
 
 type HomeScreenRouteProp = RouteProp<RootStackParamList, "User">;
 
@@ -23,58 +24,20 @@ export const HomeScreen = () => {
     loading: locationLoading,
     error: locationError,
   } = useLocation();
-  const [loading, setLoading] = useState(true);
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<HomeScreenRouteProp>();
   const userAnswers = route.params?.userAnswers;
   const styles = createHomeStyles(colors);
   const { sortType } = useSortContext();
 
   useEffect(() => {
-    const fetchPlaces = async () => {
-      if (!latitude || !longitude) return;
-
-      try {
-        const nearbyPlaces = await placesApi.getNearbyPlacesWithWebsites(
-          latitude,
-          longitude
-        );
-
-        const activities = nearbyPlaces.map((place) => ({
-          id: place.place_id,
-          name: place.name,
-          rating: place.rating || 0,
-          image: place.photos?.[0]
-            ? placesApi.getPhotoUrl(place.photos[0].photo_reference)
-            : "https://picsum.photos/400/200",
-          description: place.vicinity || "",
-          distance: "",
-          address: place.vicinity || "",
-          openingHours: place.opening_hours?.open_now ? "Open" : "Closed",
-          features: place.types || [],
-          tags: place.types || [],
-          difficulty: userAnswers?.q3 || "moderate",
-          duration: userAnswers?.q4 || "1-2 hours",
-          timeOfDay: userAnswers?.q5 || "any",
-          website: place.website || null,
-          phone: place.phone || null,
-        }));
-
-        const recommendedPlaces = userAnswers
-          ? getRecommendations(userAnswers, activities).recommendations
-          : activities;
-
-        setPlaces(recommendedPlaces);
-      } catch (error) {
-        console.error("Failed to fetch places:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPlaces();
-  }, [latitude, longitude, userAnswers]);
+    // Simply set the places based on recommendations or all mock places
+    const recommendedPlaces = userAnswers
+      ? getRecommendations(userAnswers, mockPlaces).recommendations
+      : mockPlaces;
+    
+    setPlaces(recommendedPlaces);
+  }, [userAnswers]);
 
   const sortedPlaces = useMemo(() => {
     return [...places].sort((a, b) => {
@@ -94,7 +57,7 @@ export const HomeScreen = () => {
     });
   }, [places, sortType]);
 
-  const isLoading = loading || locationLoading;
+  const isLoading = false;
 
   return (
     <View style={styles.container}>
