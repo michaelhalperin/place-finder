@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
+import { useLocationContext } from '../context/LocationContext';
 
 interface LocationState {
   latitude: number | null;
@@ -9,6 +10,7 @@ interface LocationState {
 }
 
 export const useLocation = () => {
+  const { isLocationEnabled } = useLocationContext();
   const [state, setState] = useState<LocationState>({
     latitude: null,
     longitude: null,
@@ -17,6 +19,16 @@ export const useLocation = () => {
   });
 
   const requestAndGetLocation = async () => {
+    if (!isLocationEnabled) {
+      setState({
+        latitude: null,
+        longitude: null,
+        error: 'Location services are disabled',
+        loading: false,
+      });
+      return;
+    }
+
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
@@ -50,7 +62,7 @@ export const useLocation = () => {
 
   useEffect(() => {
     requestAndGetLocation();
-  }, []);
+  }, [isLocationEnabled]);
 
   return {
     ...state,

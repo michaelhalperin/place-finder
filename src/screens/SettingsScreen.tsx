@@ -11,9 +11,9 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/types";
-import { createSettingsStyles } from "../theme/constants";
-import { useTheme } from "../theme/ThemeContext";
+import { useTheme as useThemeContext } from "../theme/ThemeContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useLocationContext } from '../context/LocationContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, "Settings">;
 
@@ -25,17 +25,12 @@ type SettingsSectionProps = {
 const SettingsSection: React.FC<SettingsSectionProps> = ({
   title,
   children,
-}) => {
-  const { colors } = useTheme();
-  const styles = createSettingsStyles(colors);
-  
-  return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      <View style={styles.sectionContent}>{children}</View>
-    </View>
-  );
-};
+}) => (
+  <View style={styles.section}>
+    <Text style={styles.sectionTitle}>{title}</Text>
+    <View style={styles.sectionContent}>{children}</View>
+  </View>
+);
 
 type SettingsToggleProps = {
   title: string;
@@ -51,43 +46,40 @@ const SettingsToggle: React.FC<SettingsToggleProps> = ({
   value,
   onValueChange,
   icon,
-}) => {
-  const { colors } = useTheme();
-  const styles = createSettingsStyles(colors);
-  
-  return (
-    <View style={styles.settingItem}>
-      <View style={styles.settingInfo}>
-        {icon && <Icon name={icon} size={24} style={styles.settingIcon} />}
-        <View>
-          <Text style={styles.settingTitle}>{title}</Text>
-          {description && (
-            <Text style={styles.settingDescription}>{description}</Text>
-          )}
-        </View>
+}) => (
+  <View style={styles.settingItem}>
+    <View style={styles.settingInfo}>
+      {icon && <Icon name={icon} size={24} style={styles.settingIcon} />}
+      <View>
+        <Text style={styles.settingTitle}>{title}</Text>
+        {description && (
+          <Text style={styles.settingDescription}>{description}</Text>
+        )}
       </View>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        ios_backgroundColor="#3e3e3e"
-      />
     </View>
-  );
-};
+    <Switch
+      value={value}
+      onValueChange={onValueChange}
+      ios_backgroundColor="#3e3e3e"
+    />
+  </View>
+);
 
 export const SettingsScreen: React.FC<Props> = () => {
-  const { isDarkMode, toggleTheme, colors } = useTheme();
+  const { isDarkMode, toggleTheme } = useThemeContext();
+  const { isLocationEnabled, setIsLocationEnabled } = useLocationContext();
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
-  const [isLocationEnabled, setIsLocationEnabled] = useState(true);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const [isHighContrast, setIsHighContrast] = useState(false);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
 
-  const styles = createSettingsStyles(colors);
-
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.container}>
+    <SafeAreaView
+      style={[styles.safeArea, isDarkMode && styles.darkBackground]}
+    >
+      <ScrollView
+        style={[styles.container, isDarkMode && styles.darkBackground]}
+      >
         <SettingsSection title="Appearance">
           <SettingsToggle
             title="Dark Mode"
@@ -178,3 +170,82 @@ export const SettingsScreen: React.FC<Props> = () => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  container: {
+    flex: 1,
+    paddingTop: 20,
+  },
+  section: {
+    marginBottom: 24,
+    paddingHorizontal: 16,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#666",
+    textTransform: "uppercase",
+    marginBottom: 8,
+    marginTop: 16,
+  },
+  sectionContent: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  settingItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  settingInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  settingIcon: {
+    marginRight: 12,
+    color: "#666",
+  },
+  settingTitle: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  settingDescription: {
+    fontSize: 13,
+    color: "#666",
+    marginTop: 2,
+  },
+  linkItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  chevron: {
+    color: "#666",
+  },
+  darkBackground: {
+    backgroundColor: "#1a1a1a",
+  },
+  darkText: {
+    color: "#fff",
+  },
+});
