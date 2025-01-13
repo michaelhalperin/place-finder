@@ -113,6 +113,7 @@ export const AppNavigator = () => {
         component={TabNavigator}
         options={{
           headerShown: false,
+          gestureEnabled: false,
         }}
       />
       <Stack.Screen name="PlaceDetails" component={PlaceDetailsScreen} />
