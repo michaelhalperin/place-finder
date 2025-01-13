@@ -74,9 +74,6 @@ export const SettingsScreen: React.FC<Props> = () => {
   const { isDarkMode, toggleTheme, colors } = useTheme();
   const { isLocationEnabled, setIsLocationEnabled } = useLocationContext();
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
-  const [isOfflineMode, setIsOfflineMode] = useState(false);
-  const [isHighContrast, setIsHighContrast] = useState(false);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
 
   const styles = createSettingsStyles(colors);
 
@@ -90,36 +87,6 @@ export const SettingsScreen: React.FC<Props> = () => {
             value={isDarkMode}
             onValueChange={toggleTheme}
             icon="theme-light-dark"
-            colors={colors}
-            styles={styles}
-          />
-          <SettingsToggle
-            title="High Contrast"
-            description="Increase text and UI contrast"
-            value={isHighContrast}
-            onValueChange={setIsHighContrast}
-            icon="contrast-box"
-            colors={colors}
-            styles={styles}
-          />
-        </SettingsSection>
-
-        <SettingsSection title="Content" styles={styles}>
-          <SettingsToggle
-            title="Auto-play Videos"
-            description="Automatically play videos when in view"
-            value={isAutoPlay}
-            onValueChange={setIsAutoPlay}
-            icon="play-circle-outline"
-            colors={colors}
-            styles={styles}
-          />
-          <SettingsToggle
-            title="Offline Mode"
-            description="Download content for offline access"
-            value={isOfflineMode}
-            onValueChange={setIsOfflineMode}
-            icon="cloud-download-outline"
             colors={colors}
             styles={styles}
           />
