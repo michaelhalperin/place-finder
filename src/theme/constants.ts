@@ -72,7 +72,7 @@ export const createProfileStyles = (colors: any) =>
       ...theme.typography.body,
       color: colors.text,
       marginBottom: theme.spacing.sm,
-      textAlign: 'center',
+      textAlign: "center",
     },
     inputContainer: {
       padding: 16,
@@ -88,12 +88,26 @@ export const createProfileStyles = (colors: any) =>
     },
     label: {
       fontSize: 16,
-      fontWeight: '600',
+      fontWeight: "600",
       color: colors.text,
     },
     buttonContainer: {
       padding: 16,
       gap: 12,
+    },
+    imageContainer: {
+      alignItems: "center",
+      marginBottom: 20,
+    },
+    profileImage: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      marginBottom: 10,
+    },
+    changePhotoText: {
+      color: colors.primary,
+      fontSize: 16,
     },
   });
 
@@ -423,24 +437,29 @@ export const createPlaceDetailsStyles = (colors: any) =>
     },
     image: {
       width: "100%",
-      height: 250,
+      height: 300,
       resizeMode: "cover",
     },
     content: {
       padding: theme.spacing.lg,
+      marginTop: -30,
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
+      backgroundColor: colors.background,
     },
     name: {
       ...theme.typography.h1,
       color: colors.text,
-      marginBottom: theme.spacing.sm,
+      marginBottom: theme.spacing.md,
+      fontSize: 28,
     },
     ratingContainer: {
       flexDirection: "row",
       alignItems: "center",
-      marginBottom: theme.spacing.lg,
+      marginBottom: theme.spacing.xl,
     },
     rating: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: "bold",
       color: colors.rating,
       marginRight: theme.spacing.md,
@@ -448,31 +467,53 @@ export const createPlaceDetailsStyles = (colors: any) =>
     distance: {
       fontSize: 16,
       color: colors.text,
-      opacity: 0.7,
+      opacity: 0.8,
     },
     section: {
-      marginBottom: theme.spacing.lg,
-      padding: theme.spacing.md,
+      marginBottom: theme.spacing.xl,
+      padding: theme.spacing.lg,
       backgroundColor: colors.surface,
-      borderRadius: theme.borderRadius.medium,
+      borderRadius: theme.borderRadius.large,
       ...theme.shadows.small,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderStyle: "solid",
     },
     sectionTitle: {
       ...theme.typography.h2,
-      color: colors.text,
-      marginBottom: theme.spacing.sm,
+      color: colors.primary,
+      marginBottom: theme.spacing.md,
+      fontSize: 20,
     },
     sectionText: {
       ...theme.typography.body,
       color: colors.text,
-      opacity: 0.8,
+      opacity: 0.9,
       lineHeight: 24,
+      fontSize: 16,
     },
     feature: {
       ...theme.typography.body,
       color: colors.text,
-      marginBottom: theme.spacing.xs,
+      marginBottom: theme.spacing.sm,
       paddingLeft: theme.spacing.sm,
+      fontSize: 16,
+      opacity: 0.9,
+    },
+    featuresList: {
+      gap: theme.spacing.sm,
+    },
+    featureItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: theme.spacing.sm,
+    },
+    featureDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: colors.primary,
+      opacity: 0.8,
     },
   });
 
@@ -543,38 +584,39 @@ export const createQuestionnaireStyles = (colors: any) =>
     },
   });
 
-export const createQuestionCardStyles = (colors: any) => StyleSheet.create({
-  container: {
-    backgroundColor: colors.surface,
-    borderRadius: theme.borderRadius.large,
-    padding: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
-    ...theme.shadows.medium,
-  },
-  question: {
-    ...theme.typography.h2,
-    color: colors.text,
-    marginBottom: theme.spacing.lg,
-  },
-  optionContainer: {
-    marginBottom: theme.spacing.sm,
-    transform: [{ scale: 1 }],
-  },
-  option: {
-    ...theme.typography.body,
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.medium,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    color: colors.text,
-    backgroundColor: colors.surface,
-  },
-  selectedOption: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-    color: colors.surface,
-  },
-});
+export const createQuestionCardStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: colors.surface,
+      borderRadius: theme.borderRadius.large,
+      padding: theme.spacing.lg,
+      marginBottom: theme.spacing.md,
+      ...theme.shadows.medium,
+    },
+    question: {
+      ...theme.typography.h2,
+      color: colors.text,
+      marginBottom: theme.spacing.lg,
+    },
+    optionContainer: {
+      marginBottom: theme.spacing.sm,
+      transform: [{ scale: 1 }],
+    },
+    option: {
+      ...theme.typography.body,
+      padding: theme.spacing.md,
+      borderRadius: theme.borderRadius.medium,
+      borderWidth: 1.5,
+      borderColor: colors.border,
+      color: colors.text,
+      backgroundColor: colors.surface,
+    },
+    selectedOption: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
+      color: colors.surface,
+    },
+  });
 
 export const createSortDropdownStyles = (colors: any) =>
   StyleSheet.create({
@@ -584,10 +626,10 @@ export const createSortDropdownStyles = (colors: any) =>
     },
     overlay: {
       flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.3)',
+      backgroundColor: "rgba(0,0,0,0.3)",
     },
     dropdown: {
-      position: 'absolute',
+      position: "absolute",
       top: 50,
       right: 10,
       backgroundColor: colors.surface,
@@ -597,8 +639,8 @@ export const createSortDropdownStyles = (colors: any) =>
       ...theme.shadows.medium,
     },
     option: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       padding: theme.spacing.md,
       borderRadius: theme.borderRadius.small,
     },
@@ -632,19 +674,19 @@ export const createSkeletonStyles = (colors: any) =>
       backgroundColor: colors.border,
       borderRadius: 4,
       marginBottom: 8,
-      width: '70%' as const,
+      width: "70%" as const,
     },
     description: {
       height: 16,
       backgroundColor: colors.border,
       borderRadius: 4,
       marginBottom: 8,
-      width: '90%' as const,
+      width: "90%" as const,
     },
     shortLine: {
       height: 16,
       backgroundColor: colors.border,
       borderRadius: 4,
-      width: '40%' as const,
+      width: "40%" as const,
     },
   });
