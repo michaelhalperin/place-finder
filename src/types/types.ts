@@ -36,6 +36,7 @@ export type RootStackParamList = {
     placeData: Activity;
   };
   Auth: undefined;
+  EditProfile: undefined;
 };
 
 export type TabStackParamList = Pick<RootStackParamList, 'Home' | 'Map' | 'Profile'>;

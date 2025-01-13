@@ -74,6 +74,27 @@ export const createProfileStyles = (colors: any) =>
       marginBottom: theme.spacing.sm,
       textAlign: 'center',
     },
+    inputContainer: {
+      padding: 16,
+      gap: 12,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      padding: 12,
+      fontSize: 16,
+      color: colors.text,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    buttonContainer: {
+      padding: 16,
+      gap: 12,
+    },
   });
 
 export const globalStyles = StyleSheet.create({
