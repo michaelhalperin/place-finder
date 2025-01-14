@@ -252,6 +252,22 @@ export const createHomeStyles = (colors: any) =>
       ...theme.typography.errorText,
       color: colors.error,
     },
+    indicator: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    enableButton: {
+      backgroundColor: colors.primary,
+      padding: theme.spacing.md,
+      borderRadius: theme.borderRadius.medium,
+    },
+    enableButtonText: {
+      color: colors.surface,
+      fontSize: 16,
+      fontWeight: "600",
+      textAlign: "center",
+    },
   });
 
 export const createSettingsStyles = (colors: any) =>
@@ -688,5 +704,56 @@ export const createSkeletonStyles = (colors: any) =>
       backgroundColor: colors.border,
       borderRadius: 4,
       width: "40%" as const,
+    },
+  });
+
+export const createMapStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    map: {
+      flex: 1,
+    },
+    fab: {
+      position: "absolute",
+      bottom: 20,
+      right: 20,
+      backgroundColor: colors.primary,
+    },
+    searchBar: {
+      position: "absolute",
+      top: 10,
+      left: 10,
+      right: 10,
+      backgroundColor: colors.surface,
+      borderRadius: theme.borderRadius.small,
+      marginTop: theme.spacing.xxl,
+    },
+    card: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: theme.spacing.xxl,
+    },
+    indicator: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    errorText: {
+      ...theme.typography.errorText,
+      color: colors.error,
+    },
+    enableButton: {
+      backgroundColor: colors.primary,
+      padding: theme.spacing.md,
+      borderRadius: theme.borderRadius.medium,
+    },
+    enableButtonText: {
+      color: colors.surface,
+      fontSize: 16,
+      fontWeight: "600",
+      textAlign: "center",
     },
   });
