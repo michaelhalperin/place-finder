@@ -12,14 +12,32 @@ import { ProfileSection } from "../components/layout/ProfileSection";
 import { createProfileStyles } from "../theme/constants";
 import { theme } from "@/theme";
 import { useTheme } from "@/theme/ThemeContext";
+import { useFavorites } from "@/context/FavoritesContext";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
+
+const formatPlaceName = (fullAddress: string) => {
+  // Split the address by commas and get first two parts (typically name and town)
+  const parts = fullAddress.split(",").map((part) => part.trim());
+  if (parts.length >= 2) {
+    return {
+      name: parts[0],
+      town: parts[2],
+    };
+  }
+  // Fallback if address format is different
+  return {
+    name: parts[0],
+    town: "",
+  };
+};
 
 export const ProfileScreen: React.FC<Props> = ({ route, navigation }) => {
   const userAnswers = route.params?.userAnswers as UserSettings;
   const personalizedDescription = getPersonalizedDescription(userAnswers);
   const { colors } = useTheme();
   const styles = createProfileStyles(colors);
+  const { favorites } = useFavorites();
 
   return (
     <SafeAreaContainer>
@@ -58,13 +76,38 @@ export const ProfileScreen: React.FC<Props> = ({ route, navigation }) => {
         </ProfileSection>
 
         <ProfileSection styles={styles.sectionTitle} title="Saved Places">
-          <Text style={styles.description}>no saved places yet</Text>
-          {/* Add saved places list here */}
+          {favorites.length > 0 ? (
+            <View style={styles.chipContainer}>
+              {favorites.map(
+                (
+                  place: { title: string; latitude: any; longitude: any },
+                  index: React.Key | null | undefined
+                ) => {
+                  const { name, town } = formatPlaceName(place.title);
+                  return (
+                    <Chip
+                      key={index}
+                      label={`${name}${town ? ` • ${town}` : ""}`}
+                      onPress={() => {
+                        // Optional: Navigate to map centered on this location
+                        navigation.navigate("Map", {
+                          latitude: place.latitude,
+                          longitude: place.longitude,
+                        });
+                      }}
+                    />
+                  );
+                }
+              )}
+            </View>
+          ) : (
+            <Text style={styles.description}>No saved places yet</Text>
+          )}
         </ProfileSection>
 
         <Button
           title="Edit Profile"
-          onPress={() => navigation.navigate('EditProfile')}
+          onPress={() => navigation.navigate("EditProfile")}
           variant="secondary"
           style={{ margin: theme.spacing.lg }}
         />
