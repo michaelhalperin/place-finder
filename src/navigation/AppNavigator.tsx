@@ -14,83 +14,89 @@ import { useTheme } from "../theme/ThemeContext";
 import { SortDropdown } from "../components/SortDropdown";
 import { EditProfileScreen } from "@/screens/EditProfileScreen";
 import { SortDirectionButton } from "@/components/SortDirectionButton";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, StatusBar } from "react-native";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const TabNavigator = () => {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarStyle: {
-          backgroundColor: colors.background,
-          borderTopColor: colors.border,
-        },
-        headerStyle: {
-          backgroundColor: colors.background,
-        },
-        headerTintColor: colors.text,
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName: keyof typeof Ionicons.glyphMap;
-          switch (route.name) {
-            case "Home":
-              iconName = focused ? "home" : "home-outline";
-              break;
-            case "Map":
-              iconName = focused ? "map" : "map-outline";
-              break;
-            case "Profile":
-              iconName = focused ? "person" : "person-outline";
-              break;
-            case "Settings":
-              iconName = focused ? "settings" : "settings-outline";
-              break;
-            default:
-              iconName = "home";
-          }
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textSecondary,
-      })}
-    >
-      <Tab.Screen
-        name="HomeTab"
-        component={HomeScreen}
-        options={{
-          headerShown: true,
-          headerTitle: "",
-          headerRight: () => (
-            <View style={styles.headerRight}>
-              <SortDropdown />
-              <SortDirectionButton />
-            </View>
-          ),
-          tabBarLabel: "Home",
-        }}
+    <>
+      <StatusBar
+        barStyle={isDarkMode ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
       />
-      <Tab.Screen
-        name="Map"
-        component={MapScreen}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          headerShown: true,
-          title: "Settings",
-        }}
-      />
-    </Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarStyle: {
+            backgroundColor: colors.background,
+            borderTopColor: colors.border,
+          },
+          headerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTintColor: colors.text,
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName: keyof typeof Ionicons.glyphMap;
+            switch (route.name) {
+              case "Home":
+                iconName = focused ? "home" : "home-outline";
+                break;
+              case "Map":
+                iconName = focused ? "map" : "map-outline";
+                break;
+              case "Profile":
+                iconName = focused ? "person" : "person-outline";
+                break;
+              case "Settings":
+                iconName = focused ? "settings" : "settings-outline";
+                break;
+              default:
+                iconName = "home";
+            }
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: colors.primary,
+          tabBarInactiveTintColor: colors.textSecondary,
+        })}
+      >
+        <Tab.Screen
+          name="HomeTab"
+          component={HomeScreen}
+          options={{
+            headerShown: true,
+            headerTitle: "",
+            headerRight: () => (
+              <View style={styles.headerRight}>
+                <SortDropdown />
+                <SortDirectionButton />
+              </View>
+            ),
+            tabBarLabel: "Home",
+          }}
+        />
+        <Tab.Screen
+          name="Map"
+          component={MapScreen}
+          options={{ headerShown: false }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <Tab.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            headerShown: true,
+            title: "Settings",
+          }}
+        />
+      </Tab.Navigator>
+    </>
   );
 };
 
@@ -104,49 +110,55 @@ const styles = StyleSheet.create({
 });
 
 export const AppNavigator = () => {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: colors.background,
-        },
-        headerTintColor: colors.text,
-        headerShadowVisible: false,
-        contentStyle: {
-          backgroundColor: colors.background,
-        },
-      }}
-    >
-      <Stack.Screen
-        name="Welcome"
-        component={WelcomeScreen}
-        options={{ headerShown: false }}
+    <>
+      <StatusBar
+        barStyle={isDarkMode ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
       />
-      <Stack.Screen name="Questionnaire" component={QuestionnaireScreen} />
-      <Stack.Screen
-        name="Home"
-        component={TabNavigator}
-        options={{
-          headerShown: false,
-          gestureEnabled: false,
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTintColor: colors.text,
+          headerShadowVisible: false,
+          contentStyle: {
+            backgroundColor: colors.background,
+          },
         }}
-      />
-      <Stack.Screen name="PlaceDetails" component={PlaceDetailsScreen} />
-      <Stack.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          headerShown: true,
-          title: "Settings",
-        }}
-      />
-      <Stack.Screen
-        name="EditProfile"
-        component={EditProfileScreen}
-        options={{ title: "Edit Profile", headerShown: false }}
-      />
-    </Stack.Navigator>
+      >
+        <Stack.Screen
+          name="Welcome"
+          component={WelcomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Questionnaire" component={QuestionnaireScreen} />
+        <Stack.Screen
+          name="Home"
+          component={TabNavigator}
+          options={{
+            headerShown: false,
+            gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen name="PlaceDetails" component={PlaceDetailsScreen} />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            headerShown: true,
+            title: "Settings",
+          }}
+        />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfileScreen}
+          options={{ title: "Edit Profile", headerShown: false }}
+        />
+      </Stack.Navigator>
+    </>
   );
 };
