@@ -1,38 +1,32 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Alert, Text } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Alert,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
-import { FAB, TextInput, Card } from "react-native-paper";
+import { FAB, TextInput } from "react-native-paper";
 import axios from "axios";
 
-import { theme } from "@/theme";
 import { useFavorites } from "@/context/FavoritesContext";
+import { createMapStyles } from "@/theme/constants";
+import { useTheme } from "@/theme/ThemeContext";
+import { useLocation } from "@/hooks/useLocation";
+import { useLocationContext } from "@/context/LocationContext";
 
 export const MapScreen = () => {
-  const [location, setLocation] = useState<Location.LocationObject | null>(
-    null
-  );
+  const { colors } = useTheme();
+  const styles = createMapStyles(colors);
+  const { setIsLocationEnabled } = useLocationContext();
+  const { latitude, longitude, loading, error } = useLocation();
   const [places, setPlaces] = useState<
     { latitude: number; longitude: number; title: string }[]
   >([]);
   const [search, setSearch] = useState("");
   const mapRef = React.useRef<MapView>(null);
   const { addFavorite } = useFavorites();
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Permission Denied",
-          "Please grant location permissions to use the map."
-        );
-        return;
-      }
-      const currentLocation = await Location.getCurrentPositionAsync({});
-      setLocation(currentLocation);
-    })();
-  }, []);
 
   const addPlace = (latitude: number, longitude: number, title: string) => {
     setPlaces((prev) => [...prev, { latitude, longitude, title }]);
@@ -80,10 +74,10 @@ export const MapScreen = () => {
   };
 
   const centerOnUser = () => {
-    if (!location) return;
+    if (!latitude || !longitude) return;
     const region = {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
+      latitude,
+      longitude,
       latitudeDelta: 0.01,
       longitudeDelta: 0.01,
     };
@@ -114,31 +108,55 @@ export const MapScreen = () => {
     );
   };
 
+  const handleEnableLocation = () => {
+    Alert.alert(
+      "Location Services Disabled",
+      "This app needs access to location services for better experience. Would you like to enable it?",
+      [
+        {
+          text: "Not Now",
+          style: "cancel",
+        },
+        {
+          text: "Enable",
+          onPress: () => setIsLocationEnabled(true),
+        },
+      ]
+    );
+  };
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.indicator]}>
+        <Text style={[styles.errorText, { marginBottom: 16 }]}>{error}</Text>
+        <TouchableOpacity
+          onPress={handleEnableLocation}
+          style={styles.enableButton}
+        >
+          <Text style={styles.enableButtonText}>Enable Location Services</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {location ? (
+      {!loading && latitude && longitude ? (
         <>
           <MapView
             ref={mapRef}
             style={styles.map}
             initialRegion={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
+              latitude,
+              longitude,
               latitudeDelta: 0.01,
               longitudeDelta: 0.01,
             }}
-            // onPress={(e) =>
-            //   addPlace(
-            //     e.nativeEvent.coordinate.latitude,
-            //     e.nativeEvent.coordinate.longitude,
-            //     "New Marker"
-            //   )
-            // }
           >
             <Marker
               coordinate={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
+                latitude,
+                longitude,
               }}
               title="My Location"
               pinColor="blue"
@@ -162,53 +180,22 @@ export const MapScreen = () => {
             onPress={centerOnUser}
           />
           <TextInput
-            style={styles.searchBar}
+            style={[styles.searchBar, { color: colors.text }]}
             placeholder="Search for places"
+            placeholderTextColor={colors.textSecondary}
             value={search}
             onChangeText={setSearch}
             onSubmitEditing={handleSearch}
+            selectionColor={colors.primary}
           />
         </>
       ) : (
-        <Card style={styles.card}>
-          <Card.Title title="Loading Location" />
-          <Card.Content>
-            <Text>Fetching your location, please wait...</Text>
-          </Card.Content>
-        </Card>
+        <View style={styles.indicator}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    flex: 1,
-  },
-  fab: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    backgroundColor: "#6200ee",
-  },
-  searchBar: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    right: 10,
-    backgroundColor: "white",
-    borderRadius: 5,
-    marginTop: theme.spacing.xxl,
-  },
-  card: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: theme.spacing.xxl,
-  },
-});
 
 export default MapScreen;
