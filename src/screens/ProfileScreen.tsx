@@ -89,7 +89,6 @@ export const ProfileScreen: React.FC<Props> = ({ route, navigation }) => {
                       key={index}
                       label={`${name}${town ? ` • ${town}` : ""}`}
                       onPress={() => {
-                        // Optional: Navigate to map centered on this location
                         navigation.navigate("Map", {
                           latitude: place.latitude,
                           longitude: place.longitude,

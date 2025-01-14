@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Alert,
@@ -9,12 +9,16 @@ import {
 import MapView, { Marker } from "react-native-maps";
 import { FAB, TextInput } from "react-native-paper";
 import axios from "axios";
+import { useRoute, RouteProp } from "@react-navigation/native";
 
 import { useFavorites } from "@/context/FavoritesContext";
 import { createMapStyles } from "@/theme/constants";
 import { useTheme } from "@/theme/ThemeContext";
 import { useLocation } from "@/hooks/useLocation";
 import { useLocationContext } from "@/context/LocationContext";
+import { RootStackParamList } from "@/types/types";
+
+type MapScreenRouteProp = RouteProp<RootStackParamList, "Map">;
 
 export const MapScreen = () => {
   const { colors } = useTheme();
@@ -25,8 +29,23 @@ export const MapScreen = () => {
     { latitude: number; longitude: number; title: string }[]
   >([]);
   const [search, setSearch] = useState("");
-  const mapRef = React.useRef<MapView>(null);
+  const mapRef = useRef<MapView>(null);
   const { addFavorite } = useFavorites();
+  const route = useRoute<MapScreenRouteProp>();
+
+  useEffect(() => {
+    if (route.params?.latitude && route.params?.longitude) {
+      mapRef.current?.animateToRegion(
+        {
+          latitude: route.params.latitude,
+          longitude: route.params.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        },
+        1000
+      );
+    }
+  }, [route.params?.latitude, route.params?.longitude]);
 
   const addPlace = (latitude: number, longitude: number, title: string) => {
     setPlaces((prev) => [...prev, { latitude, longitude, title }]);
@@ -147,8 +166,8 @@ export const MapScreen = () => {
             ref={mapRef}
             style={styles.map}
             initialRegion={{
-              latitude,
-              longitude,
+              latitude: route.params?.latitude || latitude,
+              longitude: route.params?.longitude || longitude,
               latitudeDelta: 0.01,
               longitudeDelta: 0.01,
             }}
