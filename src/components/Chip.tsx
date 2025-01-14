@@ -1,12 +1,13 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useTheme } from "../theme/ThemeContext";
 
 type ChipProps = {
   label: string;
+  onPress?: () => void;
 };
 
-export const Chip: React.FC<ChipProps> = ({ label }) => {
+export const Chip: React.FC<ChipProps> = ({ label, onPress }) => {
   const { colors } = useTheme();
 
   const styles = StyleSheet.create({
@@ -26,8 +27,10 @@ export const Chip: React.FC<ChipProps> = ({ label }) => {
   });
 
   return (
-    <View style={styles.chip}>
-      <Text style={styles.label}>{label}</Text>
-    </View>
+    <TouchableOpacity onPress={onPress}>
+      <View style={styles.chip}>
+        <Text style={styles.label}>{label}</Text>
+      </View>
+    </TouchableOpacity>
   );
 };

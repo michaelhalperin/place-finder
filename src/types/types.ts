@@ -31,7 +31,12 @@ export type RootStackParamList = {
   Profile: BaseParams;
   Settings: undefined;
   User: BaseParams;
-  Map: undefined;
+  Map:
+    | {
+        latitude?: number;
+        longitude?: number;
+      }
+    | undefined;
   PlaceDetails: {
     placeId: string;
     placeData: Activity;
