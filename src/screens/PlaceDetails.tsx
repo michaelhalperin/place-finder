@@ -56,7 +56,6 @@ export const PlaceDetailsScreen: React.FC<Props> = ({ route }) => {
   const openMaps = async (address: string) => {
     if (Platform.OS === "ios") {
       const hasWaze = await Linking.canOpenURL("waze://");
-      const hasGoogleMaps = await Linking.canOpenURL("comgooglemaps://");
 
       const options = ["Cancel"];
       const actions: (() => void)[] = [null as any];
@@ -66,10 +65,9 @@ export const PlaceDetailsScreen: React.FC<Props> = ({ route }) => {
         actions.push(() => openWaze(address));
       }
 
-      if (hasGoogleMaps) {
-        options.push("Google Maps");
-        actions.push(() => openGoogleMaps(address));
-      }
+      // Always add Google Maps option
+      options.push("Google Maps");
+      actions.push(() => openGoogleMaps(address));
 
       options.push("Apple Maps");
       actions.push(() => openAppleMaps(address));
