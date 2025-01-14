@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { View, FlatList, Text, ActivityIndicator, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  FlatList,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { PlaceCard } from "../components/PlaceCard";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -13,6 +20,7 @@ import { useSortContext } from "../context/SortContext";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { mockPlaces } from "../utils/mockPlaces";
 import { useLocationContext } from "@/context/LocationContext";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 type HomeScreenRouteProp = RouteProp<RootStackParamList, "User">;
 
@@ -30,7 +38,7 @@ export const HomeScreen = () => {
   const route = useRoute<HomeScreenRouteProp>();
   const userAnswers = route.params?.userAnswers;
   const styles = createHomeStyles(colors);
-  const { sortType } = useSortContext();
+  const { sortType, isAscending } = useSortContext();
   const { setIsLocationEnabled } = useLocationContext();
 
   useEffect(() => {
@@ -44,21 +52,25 @@ export const HomeScreen = () => {
   // sorting logic
   const sortedPlaces = useMemo(() => {
     return [...places].sort((a, b) => {
+      const multiplier = isAscending ? 1 : -1;
+
       switch (sortType) {
         case "rating":
-          return (b.rating || 0) - (a.rating || 0);
+          return multiplier * ((a.rating || 0) - (b.rating || 0));
         case "name":
-          return a.name.localeCompare(b.name);
+          return multiplier * a.name.localeCompare(b.name);
         case "popularity":
-          return (b.rating || 0) - (a.rating || 0);
+          return multiplier * ((a.rating || 0) - (b.rating || 0));
         case "distance":
-          // Default to original order if distance not available
-          return 0;
+          return (
+            multiplier *
+            (parseFloat(a.distance || "0") - parseFloat(b.distance || "0"))
+          );
         default:
           return 0;
       }
     });
-  }, [places, sortType]);
+  }, [places, sortType, isAscending]);
 
   const isLoading = false;
 
@@ -69,12 +81,12 @@ export const HomeScreen = () => {
       [
         {
           text: "Not Now",
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "Enable",
-          onPress: () => setIsLocationEnabled(true)
-        }
+          onPress: () => setIsLocationEnabled(true),
+        },
       ]
     );
   };
@@ -103,22 +115,24 @@ export const HomeScreen = () => {
           contentContainerStyle={styles.listContent}
         />
       ) : (
-        <FlatList
-          data={sortedPlaces}
-          renderItem={({ item }) => (
-            <PlaceCard
-              place={item}
-              onPress={() =>
-                navigation.navigate("PlaceDetails", {
-                  placeId: item.id,
-                  placeData: item,
-                })
-              }
-            />
-          )}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
-        />
+        <View>
+          <FlatList
+            data={sortedPlaces}
+            renderItem={({ item }) => (
+              <PlaceCard
+                place={item}
+                onPress={() =>
+                  navigation.navigate("PlaceDetails", {
+                    placeId: item.id,
+                    placeData: item,
+                  })
+                }
+              />
+            )}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContent}
+          />
+        </View>
       )}
     </View>
   );

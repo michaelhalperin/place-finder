@@ -13,6 +13,8 @@ import { RootStackParamList } from "../types/types";
 import { useTheme } from "../theme/ThemeContext";
 import { SortDropdown } from "../components/SortDropdown";
 import { EditProfileScreen } from "@/screens/EditProfileScreen";
+import { SortDirectionButton } from "@/components/SortDirectionButton";
+import { View, StyleSheet } from "react-native";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -61,7 +63,12 @@ const TabNavigator = () => {
         options={{
           headerShown: true,
           headerTitle: "",
-          headerRight: () => <SortDropdown />,
+          headerRight: () => (
+            <View style={styles.headerRight}>
+              <SortDropdown />
+              <SortDirectionButton />
+            </View>
+          ),
           tabBarLabel: "Home",
         }}
       />
@@ -86,6 +93,15 @@ const TabNavigator = () => {
     </Tab.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginRight: 16,
+  },
+});
 
 export const AppNavigator = () => {
   const { colors } = useTheme();
