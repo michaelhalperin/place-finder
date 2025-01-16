@@ -11,8 +11,9 @@ import { useTheme } from "@/theme/ThemeContext";
 import { createHomeStyles } from "@/theme/constants";
 import { useSortContext } from "../context/SortContext";
 import { SkeletonLoader } from "../components/SkeletonLoader";
-import { mockPlaces } from "../utils/mockPlaces";
+import { getLocalizedActivities } from "../utils/mockPlaces";
 import { useLocationContext } from "@/context/LocationContext";
+import { useTranslation } from "react-i18next";
 
 type HomeScreenRouteProp = RouteProp<RootStackParamList, "User">;
 
@@ -32,14 +33,18 @@ export const HomeScreen = () => {
   const styles = createHomeStyles(colors);
   const { sortType, isAscending } = useSortContext();
   const { setIsLocationEnabled } = useLocationContext();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const recommendedPlaces = userAnswers
-      ? getRecommendations(userAnswers, mockPlaces).recommendations
-      : mockPlaces;
+      ? getRecommendations(
+          userAnswers,
+          getLocalizedActivities(i18n.language as "en" | "he")
+        ).recommendations
+      : getLocalizedActivities(i18n.language as "en" | "he");
 
     setPlaces(recommendedPlaces);
-  }, [userAnswers]);
+  }, [userAnswers, i18n.language]);
 
   // sorting logic
   const sortedPlaces = useMemo(() => {
