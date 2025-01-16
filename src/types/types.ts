@@ -128,7 +128,13 @@ export interface PlaceDetails extends NearbyPlace {
   international_phone_number?: string;
 }
 
-export type UserSettings = Record<string, string>;
+export interface UserSettings {
+  name?: string;
+  email?: string;
+  foodTypes?: string[];
+  activities?: string[];
+  [key: string]: string | string[] | undefined;
+}
 
 export interface Description {
   interests: string[];
@@ -148,4 +154,38 @@ export interface ButtonProps {
 
 export interface GPTResponse {
   questions: Question[];
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  address?: string;
+  phone?: string;
+  preferences?: {
+    foodTypes?: string[];
+    activities?: string[];
+  };
+  favorites?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  email: string;
+  password: string;
+  name: string;
+  address?: string;
+  phone?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  userId: string;
+  user: User;
 }

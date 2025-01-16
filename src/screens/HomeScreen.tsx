@@ -1,12 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import {
-  View,
-  FlatList,
-  Text,
-  ActivityIndicator,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, FlatList, Text, TouchableOpacity, Alert } from "react-native";
 import { PlaceCard } from "../components/PlaceCard";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -20,7 +13,6 @@ import { useSortContext } from "../context/SortContext";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { mockPlaces } from "../utils/mockPlaces";
 import { useLocationContext } from "@/context/LocationContext";
-import Icon from "react-native-vector-icons/MaterialIcons";
 
 type HomeScreenRouteProp = RouteProp<RootStackParamList, "User">;
 

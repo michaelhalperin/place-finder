@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,12 +15,23 @@ import { SortDropdown } from "../components/SortDropdown";
 import { EditProfileScreen } from "@/screens/EditProfileScreen";
 import { SortDirectionButton } from "@/components/SortDirectionButton";
 import { View, StyleSheet, StatusBar } from "react-native";
+import { AuthScreen } from "../screens/AuthScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<RootStackParamList>();
 
 const TabNavigator = () => {
   const { colors, isDarkMode } = useTheme();
+
+  const checkAuthStatus = async () => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      return !!token;
+    } catch (error) {
+      return false;
+    }
+  };
 
   return (
     <>
@@ -85,6 +96,17 @@ const TabNavigator = () => {
         <Tab.Screen
           name="Profile"
           component={ProfileScreen}
+          listeners={({ navigation }) => ({
+            tabPress: async (e) => {
+              e.preventDefault();
+              const isAuth = await checkAuthStatus();
+              if (!isAuth) {
+                navigation.navigate("Auth");
+              } else {
+                navigation.navigate("Profile");
+              }
+            },
+          })}
           options={{ headerShown: false }}
         />
         <Tab.Screen
@@ -111,6 +133,25 @@ const styles = StyleSheet.create({
 
 export const AppNavigator = () => {
   const { colors, isDarkMode } = useTheme();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = async () => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      setIsAuthenticated(!!token);
+    } catch (error) {
+      setIsAuthenticated(false);
+    }
+  };
+
+  // Show loading state while checking authentication
+  if (isAuthenticated === null) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <>
@@ -130,34 +171,49 @@ export const AppNavigator = () => {
           },
         }}
       >
-        <Stack.Screen
-          name="Welcome"
-          component={WelcomeScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="Questionnaire" component={QuestionnaireScreen} />
-        <Stack.Screen
-          name="Home"
-          component={TabNavigator}
-          options={{
-            headerShown: false,
-            gestureEnabled: false,
-          }}
-        />
-        <Stack.Screen name="PlaceDetails" component={PlaceDetailsScreen} />
-        <Stack.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{
-            headerShown: true,
-            title: "Settings",
-          }}
-        />
-        <Stack.Screen
-          name="EditProfile"
-          component={EditProfileScreen}
-          options={{ title: "Edit Profile", headerShown: false }}
-        />
+        {!isAuthenticated ? (
+          // Auth Stack
+          <Stack.Screen
+            name="Auth"
+            component={AuthScreen}
+            options={{ headerShown: false }}
+          />
+        ) : (
+          // Main App Stack
+          <>
+            <Stack.Screen
+              name="Welcome"
+              component={WelcomeScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Questionnaire"
+              component={QuestionnaireScreen}
+            />
+            <Stack.Screen
+              name="Home"
+              component={TabNavigator}
+              options={{
+                headerShown: false,
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen name="PlaceDetails" component={PlaceDetailsScreen} />
+            <Stack.Screen
+              name="Settings"
+              component={SettingsScreen}
+              options={{
+                headerShown: true,
+                title: "Settings",
+              }}
+            />
+            <Stack.Screen
+              name="EditProfile"
+              component={EditProfileScreen}
+              options={{ title: "Edit Profile", headerShown: false }}
+            />
+          </>
+        )}
       </Stack.Navigator>
     </>
   );
