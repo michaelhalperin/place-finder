@@ -6,6 +6,7 @@ import {
   RegisterData,
   User,
 } from "../types/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Authentication endpoints
 export const loginUser = async (
@@ -54,4 +55,8 @@ export const updateUserFavorites = async (
   return (
     await axios.put(`${BACKEND_URL}/users/${userId}/favorites`, { favorites })
   ).data;
+};
+export const logoutUser = async () => {
+  await AsyncStorage.removeItem("token");
+  await AsyncStorage.removeItem("userId");
 };
