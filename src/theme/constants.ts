@@ -363,6 +363,34 @@ export const createSettingsStyles = (colors: any) =>
     chevron: {
       color: colors.textSecondary,
     },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalContent: {
+      width: '80%',
+      borderRadius: 10,
+      padding: 16,
+      backgroundColor: colors.card,
+    },
+    languageOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 16,
+      borderRadius: 8,
+    },
+    selectedLanguage: {
+      backgroundColor: colors.primary + '20',
+    },
+    languageText: {
+      flex: 1,
+      fontSize: 16,
+    },
+    checkIcon: {
+      color: colors.primary,
+    },
   });
 
 export const createWelcomeStyles = (colors: any) =>
