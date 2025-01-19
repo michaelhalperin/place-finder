@@ -1,8 +1,8 @@
 export const generateMapHTML = (
-    latitude: number | null,
-    longitude: number | null,
-    places: { latitude: number; longitude: number; title: string }[]
-  ) => `
+  latitude: number | null,
+  longitude: number | null,
+  places: { latitude: number; longitude: number; title: string }[]
+) => `
     <!DOCTYPE html>
     <html>
       <head>
@@ -40,7 +40,9 @@ export const generateMapHTML = (
             title: 'My Location'
           }).addTo(map);
   
-          ${places.map(place => `
+          ${places
+            .map(
+              (place) => `
             L.marker([${place.latitude}, ${place.longitude}], {
               icon: new L.Icon({
                 iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
@@ -51,7 +53,6 @@ export const generateMapHTML = (
                 shadowSize: [41, 41]
               })
             })
-              .bindPopup("${place.title}")
               .on('click', function() {
                 window.ReactNativeWebView.postMessage(JSON.stringify({
                   type: 'markerClick',
@@ -59,7 +60,11 @@ export const generateMapHTML = (
                 }));
               })
               .addTo(map);
-          `).join('')}
+
+            map.setView([${place.latitude}, ${place.longitude}], 13);
+          `
+            )
+            .join("")}
         </script>
       </body>
     </html>
