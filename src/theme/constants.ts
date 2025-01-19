@@ -224,6 +224,20 @@ export const createAuthStyles = (colors: any) =>
       textAlign: "center",
       marginTop: theme.spacing.lg,
     },
+    passwordContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      position: "relative",
+    },
+    passwordInput: {
+      flex: 1,
+    },
+    eyeIcon: {
+      position: "absolute",
+      right: 12,
+      height: "100%",
+      justifyContent: "center",
+    },
   });
 
 export const createHomeStyles = (colors: any) =>

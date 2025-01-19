@@ -11,7 +11,11 @@ export function getRecommendations(
     let score = 0;
 
     if (
-      activity.tags.some((tag) => tag.includes(userAnswers.q1?.toLowerCase()))
+      activity.tags.some((tag) =>
+        Array.isArray(userAnswers.q1)
+          ? userAnswers.q1.some((q) => tag.includes(q.toLowerCase()))
+          : tag.includes(userAnswers.q1?.toString().toLowerCase() || "")
+      )
     ) {
       score += 3;
     }
@@ -55,7 +59,7 @@ export function getPersonalizedDescription(
 
   // Extract interests directly from userAnswers instead of using getRecommendations
   const interests = Object.values(userAnswers)
-    .filter(Boolean)
+    .filter((answer): answer is string => Boolean(answer))
     .map((answer) => answer.toString().trim());
 
   return {

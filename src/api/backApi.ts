@@ -8,7 +8,6 @@ import {
 } from "../types/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Authentication endpoints
 export const loginUser = async (
   credentials: LoginCredentials
 ): Promise<AuthResponse> => {
@@ -18,12 +17,29 @@ export const loginUser = async (
 export const registerUser = async (
   data: RegisterData
 ): Promise<AuthResponse> => {
-  return (await axios.post(`${BACKEND_URL}/auth/register`, data)).data;
+  try {
+    const response = await axios.post(`${BACKEND_URL}/auth/register`, data);
+    await AsyncStorage.setItem("userToken", response.data.token);
+    await AsyncStorage.setItem("userId", response.data.userId);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.error || "Registration failed");
+    }
+    throw error;
+  }
 };
 
-// User data endpoints
 export const getUserProfile = async (userId: string): Promise<User> => {
-  return (await axios.get(`${BACKEND_URL}/users/${userId}`)).data;
+  const token = await AsyncStorage.getItem("userToken");
+
+  return (
+    await axios.get(`${BACKEND_URL}/api/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  ).data;
 };
 
 export const updateUserProfile = async (
@@ -57,6 +73,6 @@ export const updateUserFavorites = async (
   ).data;
 };
 export const logoutUser = async () => {
-  await AsyncStorage.removeItem("token");
+  await AsyncStorage.removeItem("userToken");
   await AsyncStorage.removeItem("userId");
 };

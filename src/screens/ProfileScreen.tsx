@@ -13,13 +13,12 @@ import { createProfileStyles } from "../theme/constants";
 import { theme } from "@/theme";
 import { useTheme } from "@/theme/ThemeContext";
 import { useFavorites } from "@/context/FavoritesContext";
-import { getUserProfile } from "@/api/backApi";
+import { getUserProfile, logoutUser } from "@/api/backApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
 const formatPlaceName = (fullAddress: string) => {
-  // Split the address by commas and get first two parts (typically name and town)
   const parts = fullAddress.split(",").map((part) => part.trim());
   if (parts.length >= 2) {
     return {
@@ -27,19 +26,9 @@ const formatPlaceName = (fullAddress: string) => {
       town: parts[2],
     };
   }
-  // Fallback if address format is different
   return {
     name: parts[0],
     town: "",
-  };
-};
-
-const userToSettings = (user: User | null): UserSettings => {
-  if (!user) return {};
-  return {
-    name: user.name,
-    email: user.email,
-    ...user.preferences,
   };
 };
 
@@ -49,9 +38,9 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const styles = createProfileStyles(colors);
   const { favorites } = useFavorites();
 
-  // useEffect(() => {
-  //   fetchUserData();
-  // }, []);
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   const fetchUserData = async () => {
     try {
@@ -88,16 +77,16 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
         <ProfileSection styles={styles.sectionTitle} title="About You">
           <View style={styles.chipContainer}>
-            {getPersonalizedDescription(userToSettings(userData)).interests.map(
-              (interest) => (
-                <Chip key={interest} label={interest} />
-              )
-            )}
+            {getPersonalizedDescription(
+              userData?.preferences || {}
+            ).interests.map((interest) => (
+              <Chip key={interest} label={interest} />
+            ))}
           </View>
           <Text style={styles.description}>
-            {getPersonalizedDescription(userToSettings(userData)).text}
+            {getPersonalizedDescription(userData?.preferences || {}).text}
           </Text>
-          {getPersonalizedDescription(userToSettings(userData))
+          {getPersonalizedDescription(userData?.preferences || {})
             .needsQuestionnaire && (
             <Button
               title="Start Quick Quiz"
@@ -147,10 +136,34 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           )}
         </ProfileSection>
 
+        <ProfileSection styles={styles.sectionTitle} title="Friends">
+          {userData?.friends && userData.friends.length > 0 ? (
+            <View style={styles.chipContainer}>
+              {userData.friends.map((friend) => (
+                <Chip key={friend.id} label={friend.name} />
+              ))}
+            </View>
+          ) : (
+            <Text style={styles.description}>No friends added yet</Text>
+          )}
+        </ProfileSection>
+
         <Button
           title="Edit Profile"
           onPress={() => navigation.navigate("EditProfile")}
           variant="secondary"
+          style={{ margin: theme.spacing.lg }}
+        />
+        <Button
+          title="Logout"
+          onPress={async () => {
+            await logoutUser();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Home' }],
+            });
+          }}
+          variant="danger"
           style={{ margin: theme.spacing.lg }}
         />
       </ContentContainer>

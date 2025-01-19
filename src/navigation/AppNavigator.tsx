@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,9 +27,11 @@ const TabNavigator = () => {
   const checkAuthStatus = async () => {
     try {
       const token = await AsyncStorage.getItem("userToken");
+      if (!token) return null;
       return !!token;
     } catch (error) {
-      return false;
+      console.log(error);
+      return null;
     }
   };
 
@@ -133,25 +135,6 @@ const styles = StyleSheet.create({
 
 export const AppNavigator = () => {
   const { colors, isDarkMode } = useTheme();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
-    try {
-      const token = await AsyncStorage.getItem("userToken");
-      setIsAuthenticated(!!token);
-    } catch (error) {
-      setIsAuthenticated(false);
-    }
-  };
-
-  // Show loading state while checking authentication
-  if (isAuthenticated === null) {
-    return null; // Or a loading spinner
-  }
 
   return (
     <>
@@ -160,6 +143,7 @@ export const AppNavigator = () => {
         backgroundColor={colors.background}
       />
       <Stack.Navigator
+        initialRouteName="Welcome"
         screenOptions={{
           headerStyle: {
             backgroundColor: colors.background,
@@ -171,49 +155,36 @@ export const AppNavigator = () => {
           },
         }}
       >
-        {!isAuthenticated ? (
-          // Auth Stack
-          <Stack.Screen
-            name="Auth"
-            component={AuthScreen}
-            options={{ headerShown: false }}
-          />
-        ) : (
-          // Main App Stack
-          <>
-            <Stack.Screen
-              name="Welcome"
-              component={WelcomeScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="Questionnaire"
-              component={QuestionnaireScreen}
-            />
-            <Stack.Screen
-              name="Home"
-              component={TabNavigator}
-              options={{
-                headerShown: false,
-                gestureEnabled: false,
-              }}
-            />
-            <Stack.Screen name="PlaceDetails" component={PlaceDetailsScreen} />
-            <Stack.Screen
-              name="Settings"
-              component={SettingsScreen}
-              options={{
-                headerShown: true,
-                title: "Settings",
-              }}
-            />
-            <Stack.Screen
-              name="EditProfile"
-              component={EditProfileScreen}
-              options={{ title: "Edit Profile", headerShown: false }}
-            />
-          </>
-        )}
+        <Stack.Screen
+          name="Home"
+          component={TabNavigator}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Auth"
+          component={AuthScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Welcome"
+          component={WelcomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Questionnaire" component={QuestionnaireScreen} />
+        <Stack.Screen name="PlaceDetails" component={PlaceDetailsScreen} />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            headerShown: true,
+            title: "Settings",
+          }}
+        />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfileScreen}
+          options={{ title: "Edit Profile", headerShown: false }}
+        />
       </Stack.Navigator>
     </>
   );
