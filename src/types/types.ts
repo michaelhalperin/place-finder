@@ -146,7 +146,7 @@ export interface Description {
 export interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "danger";
   size?: "medium" | "large";
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -169,6 +169,10 @@ export interface User {
   favorites?: string[];
   createdAt?: string;
   updatedAt?: string;
+  friends?: Array<{
+    id: string;
+    name: string;
+  }>;
 }
 
 export interface LoginCredentials {

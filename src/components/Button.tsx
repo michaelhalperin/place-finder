@@ -29,6 +29,9 @@ export const Button: React.FC<ButtonProps> = ({
       borderWidth: 2,
       borderColor: colors.primary,
     },
+    danger: {
+      backgroundColor: colors.error,
+    },
     medium: {
       paddingVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.lg,
@@ -49,6 +52,9 @@ export const Button: React.FC<ButtonProps> = ({
     },
     secondaryText: {
       color: colors.primary,
+    },
+    dangerText: {
+      color: "white",
     },
   });
 

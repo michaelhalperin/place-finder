@@ -26,11 +26,15 @@ export const Chip: React.FC<ChipProps> = ({ label, onPress }) => {
     },
   });
 
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={styles.chip}>
-        <Text style={styles.label}>{label}</Text>
-      </View>
-    </TouchableOpacity>
+  const ChipContent = (
+    <View style={styles.chip}>
+      <Text style={styles.label}>{label}</Text>
+    </View>
   );
+
+  return onPress ? (
+    <TouchableOpacity onPress={onPress}>
+      {ChipContent}
+    </TouchableOpacity>
+  ) : ChipContent;
 };
