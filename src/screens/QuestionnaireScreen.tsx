@@ -6,16 +6,19 @@ import { Button } from "../components/Button";
 import { useTheme } from "../theme/ThemeContext";
 import { createQuestionnaireStyles } from "@/theme/constants";
 import { RootStackParamList } from "@/types/types";
-import { INITIAL_QUESTIONS } from "@/utils/questions";
+// import { INITIAL_QUESTIONS } from "@/utils/questions";
+import { NEW_INITIAL_QUESTIONS } from "@/utils/newQuestions";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Questionnaire">;
 
 export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
   const { colors } = useTheme();
   const styles = createQuestionnaireStyles(colors);
-  const [currentQuestionId, setCurrentQuestionId] = useState("q1");
+  const [currentQuestionId, setCurrentQuestionId] = useState("groupSize");
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [questions, setQuestions] = useState([INITIAL_QUESTIONS["q1"]]);
+  const [questions, setQuestions] = useState([
+    NEW_INITIAL_QUESTIONS["groupSize"],
+  ]);
   const scrollViewRef = useRef<ScrollView>(null);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -26,14 +29,14 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
       [questionId]: optionId,
     }));
 
-    const currentQuestion = questions.find((q) => q.id === questionId);
-    const selectedOption = currentQuestion?.options.find(
-      (o) => o.id === optionId
-    );
+    const currentQuestion = NEW_INITIAL_QUESTIONS[questionId];
+    if (!currentQuestion) return;
 
-    if (selectedOption?.nextQuestions) {
-      const nextQuestionId = Object.keys(selectedOption.nextQuestions)[0];
-      const nextQuestion = selectedOption.nextQuestions[nextQuestionId];
+    // Get next question ID using the nextQuestion function
+    const nextQuestionId = currentQuestion.nextQuestion(optionId);
+
+    if (nextQuestionId) {
+      const nextQuestion = NEW_INITIAL_QUESTIONS[nextQuestionId];
 
       // Animation
       Animated.sequence([
@@ -55,25 +58,14 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
         const updatedQuestions = prev.slice(0, currentIndex + 1);
 
         // Add the new next question if it's not already there
-        if (!updatedQuestions.find((q) => q.id === nextQuestion.id)) {
+        if (!updatedQuestions.find((q) => q.id === nextQuestionId)) {
           updatedQuestions.push(nextQuestion);
         }
 
         return updatedQuestions;
       });
 
-      setCurrentQuestionId(nextQuestion.id);
-
-      // Remove answers for questions that were removed
-      setAnswers((prev) => {
-        const newAnswers = { ...prev };
-        Object.keys(newAnswers).forEach((key) => {
-          if (key !== questionId && !questions.find((q) => q.id === key)) {
-            delete newAnswers[key];
-          }
-        });
-        return newAnswers;
-      });
+      setCurrentQuestionId(nextQuestionId);
 
       // Scroll to new question
       setTimeout(() => {
@@ -84,7 +76,8 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const progress = (Object.keys(answers).length / 5) * 100;
+  const totalQuestions = Object.keys(answers).length;
+  const progress = (Object.keys(answers).length / totalQuestions) * 100;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -95,7 +88,7 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
             <View style={[styles.progressBar, { width: `${progress}%` }]} />
           </View>
           <Text style={styles.progressText}>
-            {Object.keys(answers).length} of 5 answered
+            {Object.keys(answers).length} of {totalQuestions} answered
           </Text>
         </View>
 
@@ -118,7 +111,13 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
               ]}
             >
               <QuestionCard
-                question={q.question}
+                question={
+                  typeof q.question === "function"
+                    ? q.question(
+                        answers[questions[questions.length - 2]?.id] || ""
+                      )
+                    : q.question
+                }
                 options={q.options}
                 selectedOption={answers[q.id]}
                 onSelect={(optionId) => handleAnswer(q.id, optionId)}
@@ -136,7 +135,7 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
                 userAnswers: answers,
               })
             }
-            disabled={Object.keys(answers).length !== 5}
+            disabled={Object.keys(answers).length !== totalQuestions}
             style={styles.button}
           />
         </View>

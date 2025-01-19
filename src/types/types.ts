@@ -57,6 +57,7 @@ export interface PlaceCardProps {
 
 export interface QuestionOption {
   id: string;
+  value: string;
   label: string;
   icon?: string;
   nextQuestions?: Record<string, Question>;
@@ -64,8 +65,10 @@ export interface QuestionOption {
 
 export interface Question {
   id: string;
-  question: string;
+  question: string | ((prevAnswer: string) => string);
+  type: string;
   options: QuestionOption[];
+  nextQuestion: (answer: string) => string | null;
 }
 
 export interface QuestionCardProps {
