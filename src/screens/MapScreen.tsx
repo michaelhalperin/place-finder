@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Alert, ActivityIndicator } from "react-native";
+import {
+  View,
+  Alert,
+  ActivityIndicator,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { WebView } from "react-native-webview";
 import { FAB, TextInput } from "react-native-paper";
 import axios from "axios";
@@ -11,6 +17,7 @@ import { useTheme } from "@/theme/ThemeContext";
 import { useLocation } from "@/hooks/useLocation";
 import { RootStackParamList } from "@/types/types";
 import { generateMapHTML } from "@/utils/mapHtml";
+import { useLocationContext } from "@/context/LocationContext";
 
 type MapScreenRouteProp = RouteProp<RootStackParamList, "Map">;
 
@@ -22,9 +29,10 @@ export const MapScreen = () => {
     { latitude: number; longitude: number; title: string }[]
   >([]);
   const [search, setSearch] = useState("");
-  const { latitude, longitude, loading } = useLocation();
+  const { latitude, longitude, loading, error } = useLocation();
   const { addFavorite } = useFavorites();
   const route = useRoute<MapScreenRouteProp>();
+  const { setIsLocationEnabled } = useLocationContext();
 
   useEffect(() => {
     if (route.params?.latitude && route.params?.longitude) {
@@ -69,7 +77,7 @@ export const MapScreen = () => {
 
   const centerOnLocation = (latitude: number, longitude: number) => {
     webViewRef.current?.injectJavaScript(`
-      map.setView([${latitude}, ${longitude}], 13);
+      map.setView([${latitude}, ${longitude}], 16);
     `);
   };
 
@@ -110,6 +118,43 @@ export const MapScreen = () => {
       ]
     );
   };
+
+  const handleEnableLocation = () => {
+    Alert.alert(
+      "Location Services Disabled",
+      "This app needs access to location services for better experience. Would you like to enable it?",
+      [
+        {
+          text: "Not Now",
+          style: "cancel",
+        },
+        {
+          text: "Enable",
+          onPress: () => setIsLocationEnabled(true),
+        },
+      ]
+    );
+  };
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.indicator]}>
+        <Text
+          style={[styles.errorText, { color: colors.error, marginBottom: 16 }]}
+        >
+          {error}
+        </Text>
+        <TouchableOpacity
+          onPress={handleEnableLocation}
+          style={[styles.enableButton, { backgroundColor: colors.primary }]}
+        >
+          <Text style={[styles.enableButtonText, { color: colors.background }]}>
+            Enable Location Services
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   if (loading || !latitude || !longitude) {
     return (

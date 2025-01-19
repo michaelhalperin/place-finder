@@ -18,7 +18,8 @@ export const useLocation = () => {
     loading: true,
   });
 
-  const requestAndGetLocation = async () => {
+  useEffect(() => {
+    // Reset state when location is disabled
     if (!isLocationEnabled) {
       setState({
         latitude: null,
@@ -29,6 +30,11 @@ export const useLocation = () => {
       return;
     }
 
+    // Only request location if enabled
+    requestAndGetLocation();
+  }, [isLocationEnabled]);
+
+  const requestAndGetLocation = async () => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
@@ -44,7 +50,9 @@ export const useLocation = () => {
       }
 
       // Get current location
-      const location = await Location.getCurrentPositionAsync({});
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High
+      });
       setState({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
@@ -59,10 +67,6 @@ export const useLocation = () => {
       }));
     }
   };
-
-  useEffect(() => {
-    requestAndGetLocation();
-  }, [isLocationEnabled]);
 
   return {
     ...state,

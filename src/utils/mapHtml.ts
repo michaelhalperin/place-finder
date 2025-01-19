@@ -25,7 +25,7 @@ export const generateMapHTML = (
         <script>
           const map = L.map('map', {
             zoomControl: false
-          }).setView([${latitude || 0}, ${longitude || 0}], 13);
+          }).setView([${latitude || 0}, ${longitude || 0}], 16);
           
           L.control.zoom({
             position: 'bottomleft'
