@@ -175,6 +175,7 @@ export interface User {
       title: string;
       latitude: number;
       longitude: number;
+      _id: string;
     }>;
     friends?: Array<{
       id: string;
