@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   View,
   Alert,
@@ -9,7 +9,8 @@ import {
 import { WebView } from "react-native-webview";
 import { FAB, TextInput } from "react-native-paper";
 import axios from "axios";
-import { useRoute, RouteProp } from "@react-navigation/native";
+import { useRoute, RouteProp, useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useFavorites } from "@/context/FavoritesContext";
 import { createMapStyles } from "@/theme/constants";
@@ -18,6 +19,9 @@ import { useLocation } from "@/hooks/useLocation";
 import { RootStackParamList } from "@/types/types";
 import { generateMapHTML } from "@/utils/mapHtml";
 import { useLocationContext } from "@/context/LocationContext";
+import { updateUserSettings } from "@/api/backApi";
+import { useUserDataRefresh } from "@/hooks/useUserDataRefresh";
+import { getUserProfile } from "@/api/backApi";
 
 type MapScreenRouteProp = RouteProp<RootStackParamList, "Map">;
 
@@ -26,19 +30,85 @@ export const MapScreen = () => {
   const styles = createMapStyles(colors);
   const webViewRef = useRef<WebView>(null);
   const [places, setPlaces] = useState<
-    { latitude: number; longitude: number; title: string }[]
+    { latitude: number; longitude: number; title: string; saved?: boolean }[]
   >([]);
   const [search, setSearch] = useState("");
   const { latitude, longitude, loading, error } = useLocation();
   const { addFavorite } = useFavorites();
   const route = useRoute<MapScreenRouteProp>();
   const { setIsLocationEnabled } = useLocationContext();
+  const { refreshUserData } = useUserDataRefresh();
+  const [shouldRefresh, setShouldRefresh] = useState(false);
 
   useEffect(() => {
     if (route.params?.latitude && route.params?.longitude) {
       centerOnLocation(route.params.latitude, route.params.longitude);
     }
   }, [route.params?.latitude, route.params?.longitude]);
+
+  useEffect(() => {
+    const fetchSavedPlaces = async () => {
+      try {
+        const userId = await AsyncStorage.getItem("userId");
+        if (!userId) return;
+
+        const userData = await getUserProfile(userId);
+        if (userData?.settings?.savedPlaces) {
+          const savedPlaces = userData.settings.savedPlaces.map((place) => ({
+            latitude: place.latitude,
+            longitude: place.longitude,
+            title: place.title,
+            saved: true,
+          }));
+
+          setPlaces((prevPlaces) => {
+            // Combine existing unsaved places with saved places
+            const unsavedPlaces = prevPlaces.filter((p) => !p.saved);
+            return [...unsavedPlaces, ...savedPlaces];
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching saved places:", error);
+      }
+    };
+
+    fetchSavedPlaces();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (shouldRefresh) {
+        refreshUserData();
+        const fetchSavedPlaces = async () => {
+          try {
+            const userId = await AsyncStorage.getItem("userId");
+            if (!userId) return;
+
+            const userData = await getUserProfile(userId);
+            if (userData?.settings?.savedPlaces) {
+              const savedPlaces = userData.settings.savedPlaces.map(
+                (place) => ({
+                  latitude: place.latitude,
+                  longitude: place.longitude,
+                  title: place.title,
+                  saved: true,
+                })
+              );
+
+              setPlaces((prevPlaces) => {
+                const unsavedPlaces = prevPlaces.filter((p) => !p.saved);
+                return [...unsavedPlaces, ...savedPlaces];
+              });
+            }
+          } catch (error) {
+            console.error("Error fetching saved places:", error);
+          }
+        };
+        fetchSavedPlaces();
+        setShouldRefresh(false);
+      }
+    }, [refreshUserData, shouldRefresh])
+  );
 
   const handleSearch = async () => {
     if (!search.trim()) return;
@@ -64,6 +134,7 @@ export const MapScreen = () => {
           latitude: parseFloat(firstPlace.lat),
           longitude: parseFloat(firstPlace.lon),
           title: firstPlace.display_name,
+          saved: false,
         };
 
         setPlaces((prev) => [...prev, newPlace]);
@@ -98,11 +169,16 @@ export const MapScreen = () => {
     }
   };
 
-  const handleMarkerPress = (place: {
+  const handleMarkerPress = async (place: {
     latitude: number;
     longitude: number;
     title: string;
+    saved?: boolean;
   }) => {
+    if (place.saved) {
+      return;
+    }
+
     Alert.alert(
       "Save Location",
       "Would you like to save this location to favorites?",
@@ -110,9 +186,55 @@ export const MapScreen = () => {
         { text: "Cancel", style: "cancel" },
         {
           text: "Save",
-          onPress: () => {
-            addFavorite(place);
-            Alert.alert("Success", "Location saved to favorites!");
+          onPress: async () => {
+            try {
+              const userId = await AsyncStorage.getItem("userId");
+              const token = await AsyncStorage.getItem("userToken");
+
+              if (!userId || !token) {
+                Alert.alert("Error", "Please log in to save locations");
+                return;
+              }
+
+              const response = await updateUserSettings(userId, {
+                place: {
+                  latitude: place.latitude,
+                  longitude: place.longitude,
+                  title: place.title,
+                },
+                action: "addPlace",
+              });
+
+              if (response.status === 200) {
+                setPlaces(
+                  places.map((p) =>
+                    p.latitude === place.latitude &&
+                    p.longitude === place.longitude
+                      ? { ...p, saved: true }
+                      : p
+                  )
+                );
+                addFavorite({
+                  latitude: place.latitude,
+                  longitude: place.longitude,
+                  title: place.title,
+                });
+                Alert.alert("Success", "Location saved to favorites!");
+                setShouldRefresh(true);
+              } else {
+                throw new Error("Failed to save location");
+              }
+            } catch (error) {
+              console.error("Error saving place:", error);
+              if (axios.isAxiosError(error) && error.response?.status === 401) {
+                Alert.alert("Error", "Please log in again to save locations");
+              } else {
+                Alert.alert(
+                  "Error",
+                  "Failed to save location. Please try again."
+                );
+              }
+            }
           },
         },
       ]

@@ -162,6 +162,7 @@ export interface User {
   name: string;
   address?: string;
   phone?: string;
+  image?: string;
   preferences?: {
     foodTypes?: string[];
     activities?: string[];
@@ -169,10 +170,18 @@ export interface User {
   favorites?: string[];
   createdAt?: string;
   updatedAt?: string;
-  friends?: Array<{
-    id: string;
-    name: string;
-  }>;
+  settings?: {
+    savedPlaces?: Array<{
+      title: string;
+      latitude: number;
+      longitude: number;
+    }>;
+    friends?: Array<{
+      id: string;
+      name: string;
+    }>;
+    [key: string]: any;
+  };
 }
 
 export interface LoginCredentials {

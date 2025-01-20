@@ -18,6 +18,11 @@ export const createProfileStyles = (colors: any) =>
       justifyContent: "center",
       marginBottom: theme.spacing.md,
     },
+    avatarImage: {
+      width: "100%",
+      height: "100%",
+      borderRadius: 50,
+    },
     avatarText: {
       color: "white",
       fontSize: 36,
@@ -365,24 +370,24 @@ export const createSettingsStyles = (colors: any) =>
     },
     modalOverlay: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      justifyContent: 'center',
-      alignItems: 'center',
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      justifyContent: "center",
+      alignItems: "center",
     },
     modalContent: {
-      width: '80%',
+      width: "80%",
       borderRadius: 10,
       padding: 16,
       backgroundColor: colors.card,
     },
     languageOption: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       padding: 16,
       borderRadius: 8,
     },
     selectedLanguage: {
-      backgroundColor: colors.primary + '20',
+      backgroundColor: colors.primary + "20",
     },
     languageText: {
       flex: 1,

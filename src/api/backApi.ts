@@ -33,46 +33,78 @@ export const registerUser = async (
 export const getUserProfile = async (userId: string): Promise<User> => {
   const token = await AsyncStorage.getItem("userToken");
 
-  return (
-    await axios.get(`${BACKEND_URL}/api/users/${userId}`, {
+  try {
+    const response = await axios.get(`${BACKEND_URL}/api/users/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-  ).data;
-};
+      timeout: 10000,
+    });
 
-export const updateUserProfile = async (
-  userId: string,
-  data: Partial<User>
-): Promise<User> => {
-  return (await axios.put(`${BACKEND_URL}/users/${userId}`, data)).data;
+    const userData = {
+      ...response.data,
+      settings: {
+        ...response.data.settings,
+        savedPlaces: response.data.savedPlaces || [],
+      },
+    };
+
+    return userData;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.code === "ECONNABORTED") {
+        throw new Error(
+          "Request timed out - please check your internet connection"
+        );
+      }
+      throw new Error(error.message);
+    }
+    throw error;
+  }
 };
 
 export const deleteUserAccount = async (userId: string): Promise<void> => {
   return (await axios.delete(`${BACKEND_URL}/users/${userId}`)).data;
 };
 
-// User preferences
-export const updateUserPreferences = async (
-  userId: string,
-  preferences: User["preferences"]
-): Promise<User> => {
-  return (
-    await axios.put(`${BACKEND_URL}/users/${userId}/preferences`, preferences)
-  ).data;
-};
-
-// User favorites
-export const updateUserFavorites = async (
-  userId: string,
-  favorites: string[]
-): Promise<User> => {
-  return (
-    await axios.put(`${BACKEND_URL}/users/${userId}/favorites`, { favorites })
-  ).data;
-};
 export const logoutUser = async () => {
   await AsyncStorage.removeItem("userToken");
   await AsyncStorage.removeItem("userId");
+};
+
+export const updateUserSettings = async (userId: string, data: any) => {
+  const token = await AsyncStorage.getItem("userToken");
+
+  const response = await axios.put(
+    `${BACKEND_URL}/api/users/settings/${userId}`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response;
+};
+
+export const deleteSavedPlace = async (userId: string): Promise<User> => {
+  const token = await AsyncStorage.getItem("userToken");
+
+  try {
+    const response = await axios.delete(
+      `${BACKEND_URL}/api/users/settings/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.error || "Failed to delete place");
+    }
+    throw error;
+  }
 };
