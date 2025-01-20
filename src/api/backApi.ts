@@ -87,12 +87,12 @@ export const updateUserSettings = async (userId: string, data: any) => {
   return response;
 };
 
-export const deleteSavedPlace = async (userId: string): Promise<User> => {
+export const deleteSavedPlace = async (userId: string, placeId: string): Promise<User> => {
   const token = await AsyncStorage.getItem("userToken");
 
   try {
     const response = await axios.delete(
-      `${BACKEND_URL}/api/users/settings/${userId}`,
+      `${BACKEND_URL}/api/users/settings/${userId}/${placeId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -103,7 +103,7 @@ export const deleteSavedPlace = async (userId: string): Promise<User> => {
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.error || "Failed to delete place");
+      throw new Error(error.message);
     }
     throw error;
   }

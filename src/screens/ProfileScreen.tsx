@@ -50,12 +50,12 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, []);
 
-  const handleDeletePlace = async () => {
+  const handleDeletePlace = async (placeId: string) => {
     try {
       const userId = await AsyncStorage.getItem("userId");
       if (!userId) return;
 
-      const updatedUserData = await deleteSavedPlace(userId);
+      const updatedUserData = await deleteSavedPlace(userId, placeId);
       setUserData(updatedUserData);
     } catch (error) {
       console.error("Error deleting place:", error);
@@ -128,11 +128,12 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                   title: string;
                   latitude: number;
                   longitude: number;
+                  _id: string;
                 }) => {
                   const { name, town } = formatPlaceName(place.title);
                   return (
                     <Chip
-                      key={place.title}
+                      key={place._id}
                       label={`${name}${town ? ` • ${town}` : ""}`}
                       onPress={() => {
                         navigation.navigate("Map", {
@@ -140,7 +141,7 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                           longitude: place.longitude,
                         });
                       }}
-                      onDelete={() => handleDeletePlace()}
+                      onDelete={() => handleDeletePlace(place._id)}
                     />
                   );
                 }
