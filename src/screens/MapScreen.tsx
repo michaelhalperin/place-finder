@@ -300,6 +300,7 @@ export const MapScreen = () => {
         placeholder="Search for places"
         placeholderTextColor={colors.textSecondary}
         value={search}
+        textColor={colors.text}
         onChangeText={setSearch}
         onSubmitEditing={handleSearch}
         selectionColor={colors.primary}

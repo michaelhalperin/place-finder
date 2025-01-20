@@ -114,6 +114,74 @@ export const createProfileStyles = (colors: any) =>
       color: colors.primary,
       fontSize: 16,
     },
+    modalContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 15,
+    },
+    modalContent: {
+      backgroundColor: colors.background,
+      borderRadius: 10,
+      padding: 20,
+      width: "80%",
+      maxHeight: "80%",
+    },
+    modalTitle: {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginBottom: 15,
+      color: colors.text,
+    },
+    modalItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: 15,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    modalItemText: {
+      color: colors.text,
+      fontSize: 16,
+    },
+    checkmark: {
+      color: colors.primary,
+      fontSize: 18,
+    },
+    editText: {
+      color: colors.primary,
+      fontSize: 14,
+      marginLeft: 8,
+    },
+    preferenceRow: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    preferenceButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    preferenceHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 8,
+    },
+    preferencesContent: {
+      marginLeft: 8,
+    },
+    viewAllText: {
+      color: colors.primary,
+      fontSize: 14,
+    },
   });
 
 export const globalStyles = StyleSheet.create({
