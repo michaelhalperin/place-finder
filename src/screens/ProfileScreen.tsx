@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import React, { useState, useCallback } from "react";
+import { View, Text, Alert } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList, UserSettings, User } from "../types/types";
+import { RootStackParamList, User } from "../types/types";
 import { Button } from "../components/Button";
 import { Chip } from "../components/Chip";
 import { getPersonalizedDescription } from "@/utils/recommendations";
@@ -12,9 +12,10 @@ import { ProfileSection } from "../components/layout/ProfileSection";
 import { createProfileStyles } from "../theme/constants";
 import { theme } from "@/theme";
 import { useTheme } from "@/theme/ThemeContext";
-import { useFavorites } from "@/context/FavoritesContext";
-import { getUserProfile, logoutUser } from "@/api/backApi";
+import { logoutUser, deleteSavedPlace } from "@/api/backApi";
+import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getUserProfile } from "@/api/backApi";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
@@ -36,26 +37,37 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const [userData, setUserData] = useState<User | null>(null);
   const { colors } = useTheme();
   const styles = createProfileStyles(colors);
-  const { favorites } = useFavorites();
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
-      if (!userId) {
-        navigation.navigate("Auth");
-        return;
+      if (userId) {
+        const user = await getUserProfile(userId);
+        setUserData(user);
       }
-
-      const user = await getUserProfile(userId);
-      setUserData(user);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
+  }, []);
+
+  const handleDeletePlace = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) return;
+
+      const updatedUserData = await deleteSavedPlace(userId);
+      setUserData(updatedUserData);
+    } catch (error) {
+      console.error("Error deleting place:", error);
+      Alert.alert("Error", "Failed to delete place");
+    }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData();
+    }, [fetchUserData])
+  );
 
   return (
     <SafeAreaContainer>
@@ -68,6 +80,7 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                 ? userData.name.substring(0, 2).toUpperCase()
                 : "??"
             }
+            image={userData?.image}
           />
           <Text style={styles.name}>{userData?.name || "User"}</Text>
           <Text style={styles.email}>
@@ -108,17 +121,18 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         </ProfileSection>
 
         <ProfileSection styles={styles.sectionTitle} title="Saved Places">
-          {favorites.length > 0 ? (
+          {(userData?.settings?.savedPlaces?.length ?? 0) > 0 ? (
             <View style={styles.chipContainer}>
-              {favorites.map(
-                (
-                  place: { title: string; latitude: any; longitude: any },
-                  index: React.Key | null | undefined
-                ) => {
+              {userData?.settings?.savedPlaces?.map(
+                (place: {
+                  title: string;
+                  latitude: number;
+                  longitude: number;
+                }) => {
                   const { name, town } = formatPlaceName(place.title);
                   return (
                     <Chip
-                      key={index}
+                      key={place.title}
                       label={`${name}${town ? ` • ${town}` : ""}`}
                       onPress={() => {
                         navigation.navigate("Map", {
@@ -126,6 +140,7 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                           longitude: place.longitude,
                         });
                       }}
+                      onDelete={() => handleDeletePlace()}
                     />
                   );
                 }
@@ -137,9 +152,10 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         </ProfileSection>
 
         <ProfileSection styles={styles.sectionTitle} title="Friends">
-          {userData?.friends && userData.friends.length > 0 ? (
+          {userData?.settings?.friends &&
+          userData.settings.friends.length > 0 ? (
             <View style={styles.chipContainer}>
-              {userData.friends.map((friend) => (
+              {userData.settings.friends.map((friend) => (
                 <Chip key={friend.id} label={friend.name} />
               ))}
             </View>
@@ -156,12 +172,24 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         />
         <Button
           title="Logout"
-          onPress={async () => {
-            await logoutUser();
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Home' }],
-            });
+          onPress={() => {
+            Alert.alert("Confirm Logout", "Are you sure you want to logout?", [
+              {
+                text: "Cancel",
+                style: "cancel",
+              },
+              {
+                text: "Logout",
+                style: "destructive",
+                onPress: async () => {
+                  await logoutUser();
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: "Home" }],
+                  });
+                },
+              },
+            ]);
           }}
           variant="danger"
           style={{ margin: theme.spacing.lg }}

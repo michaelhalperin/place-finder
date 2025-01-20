@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -15,23 +15,72 @@ import { Button } from "../components/Button";
 import { useTheme } from "@/theme/ThemeContext";
 import { createProfileStyles } from "../theme/constants";
 import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { updateUserSettings, getUserProfile } from "../api/backApi";
+import { useUserDataRefresh } from "@/hooks/useUserDataRefresh";
 
 type Props = NativeStackScreenProps<RootStackParamList, "EditProfile">;
 
 export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
-  const [name, setName] = useState("John Doe");
-  const [email, setEmail] = useState("john.doe@example.com");
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [image, setImage] = useState<string | null>(null);
   const { colors } = useTheme();
   const styles = createProfileStyles(colors);
+  const { refreshUserData } = useUserDataRefresh();
 
-  const handleSave = () => {
-    // TODO: Implement save functionality
-    navigation.goBack();
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) {
+        navigation.navigate("Auth");
+        return;
+      }
+
+      const user = await getUserProfile(userId);
+      setName(user.name || "");
+      setEmail(user.email || "");
+      setImage(user.image || null);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      const token = await AsyncStorage.getItem("userToken");
+
+      if (!userId || !token) {
+        Alert.alert("Error", "Please log in to update your profile");
+        navigation.navigate("Auth");
+        return;
+      }
+
+      const response = await updateUserSettings(userId, {
+        name,
+        email,
+        image,
+        action: "updateProfile",
+      });
+
+      if (response.status === 200) {
+        await refreshUserData();
+        navigation.goBack();
+      } else {
+        throw new Error("Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      Alert.alert("Error", "Failed to update profile. Please try again.");
+    }
   };
 
   const pickImage = async (useCamera: boolean) => {
-    // Request permissions
     const permissionResult = useCamera
       ? await ImagePicker.requestCameraPermissionsAsync()
       : await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -59,7 +108,7 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
         }));
 
     if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
+      setImage(result.assets[0].uri);
     }
   };
 
@@ -84,9 +133,7 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
         >
           <Image
             source={
-              profileImage
-                ? { uri: profileImage }
-                : require("../../assets/splash-icon.png")
+              image ? { uri: image } : require("../../assets/splash-icon.png")
             }
             style={styles.profileImage}
           />
