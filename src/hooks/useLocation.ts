@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import * as Location from 'expo-location';
-import { useLocationContext } from '../context/LocationContext';
+import { useState, useEffect } from "react";
+import * as Location from "expo-location";
+import { useLocationContext } from "../context/LocationContext";
 
 interface LocationState {
   latitude: number | null;
@@ -19,39 +19,35 @@ export const useLocation = () => {
   });
 
   useEffect(() => {
-    // Reset state when location is disabled
     if (!isLocationEnabled) {
       setState({
         latitude: null,
         longitude: null,
-        error: 'Location services are disabled',
+        error: "Location services are disabled",
         loading: false,
       });
       return;
     }
 
-    // Only request location if enabled
     requestAndGetLocation();
   }, [isLocationEnabled]);
 
   const requestAndGetLocation = async () => {
     try {
-      setState(prev => ({ ...prev, loading: true, error: null }));
-      
-      // Request permissions
+      setState((prev) => ({ ...prev, loading: true, error: null }));
+
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setState(prev => ({
+      if (status !== "granted") {
+        setState((prev) => ({
           ...prev,
-          error: 'Permission to access location was denied',
+          error: "Permission to access location was denied",
           loading: false,
         }));
         return;
       }
 
-      // Get current location
       const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High
+        accuracy: Location.Accuracy.High,
       });
       setState({
         latitude: location.coords.latitude,
@@ -60,9 +56,9 @@ export const useLocation = () => {
         loading: false,
       });
     } catch (error) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        error: 'Failed to get location',
+        error: "Failed to get location",
         loading: false,
       }));
     }
@@ -72,4 +68,4 @@ export const useLocation = () => {
     ...state,
     refreshLocation: requestAndGetLocation,
   };
-}; 
+};

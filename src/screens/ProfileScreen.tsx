@@ -23,7 +23,7 @@ import { theme } from "@/theme";
 import { useTheme } from "@/theme/ThemeContext";
 import { createProfileStyles } from "../theme/constants";
 import { RootStackParamList, User } from "../types/types";
-import { getPersonalizedDescription } from "@/utils/recommendations";
+// import { getPersonalizedDescription } from "@/utils/recommendations";
 import {
   logoutUser,
   deleteSavedPlace,
@@ -33,20 +33,6 @@ import {
 import { FoodTypes, Activities } from "@/utils/preferences";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
-
-const formatPlaceName = (fullAddress: string) => {
-  const parts = fullAddress.split(",").map((part) => part.trim());
-  if (parts.length >= 2) {
-    return {
-      name: parts[0],
-      town: parts[2],
-    };
-  }
-  return {
-    name: parts[0],
-    town: "",
-  };
-};
 
 export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const [userData, setUserData] = useState<User | null>(null);
@@ -58,6 +44,20 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   );
   const [modalMode, setModalMode] = useState<"edit" | "view">("edit");
   const [tempSelections, setTempSelections] = useState<string[]>([]);
+
+  const formatPlaceName = (fullAddress: string) => {
+    const parts = fullAddress.split(",").map((part) => part.trim());
+    if (parts.length >= 2) {
+      return {
+        name: parts[0],
+        town: parts[2],
+      };
+    }
+    return {
+      name: parts[0],
+      town: "",
+    };
+  };
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -170,64 +170,74 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.preferenceHeader}>
               <Text style={styles.preferenceLabel}>Food Types</Text>
             </View>
-            {userData?.preferences?.foodTypes && (
-              <View style={styles.preferencesContent}>
-                {userData.preferences.foodTypes.length > 2 ? (
-                  <TouchableOpacity
-                    onPress={() => openPreferenceModal("foodTypes", "view")}
-                  >
-                    <Chip
-                      label={`View all (${userData.preferences.foodTypes.length})`}
-                    />
-                  </TouchableOpacity>
-                ) : (
-                  <View style={styles.chipContainer}>
-                    {userData.preferences.foodTypes.map((type) => (
-                      <Chip key={type} label={type} />
-                    ))}
-                  </View>
-                )}
-              </View>
-            )}
-            <TouchableOpacity onPress={() => openPreferenceModal("foodTypes")}>
-              <Ionicons
-                name="add-circle-outline"
-                size={24}
-                color={colors.primary}
-              />
-            </TouchableOpacity>
+            <View style={styles.preferencesRow}>
+              {userData?.preferences?.foodTypes && (
+                <View style={styles.preferencesContent}>
+                  {userData.preferences.foodTypes.length > 2 ? (
+                    <TouchableOpacity
+                      style={styles.chipSpacing}
+                      onPress={() => openPreferenceModal("foodTypes", "view")}
+                    >
+                      <Chip
+                        label={`View all (${userData.preferences.foodTypes.length})`}
+                      />
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={[styles.chipContainer, styles.chipSpacing]}>
+                      {userData.preferences.foodTypes.map((type) => (
+                        <Chip key={type} label={type} />
+                      ))}
+                    </View>
+                  )}
+                </View>
+              )}
+              <TouchableOpacity
+                onPress={() => openPreferenceModal("foodTypes")}
+              >
+                <Ionicons
+                  name="add-circle-outline"
+                  size={24}
+                  color={colors.primary}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.preferenceItem}>
             <View style={styles.preferenceHeader}>
               <Text style={styles.preferenceLabel}>Activities</Text>
             </View>
-            {userData?.preferences?.activities && (
-              <View style={styles.preferencesContent}>
-                {userData.preferences.activities.length > 2 ? (
-                  <TouchableOpacity
-                    onPress={() => openPreferenceModal("activities", "view")}
-                  >
-                    <Chip
-                      label={`View all (${userData.preferences.activities.length})`}
-                    />
-                  </TouchableOpacity>
-                ) : (
-                  <View style={styles.chipContainer}>
-                    {userData.preferences.activities.map((activity) => (
-                      <Chip key={activity} label={activity} />
-                    ))}
-                  </View>
-                )}
-              </View>
-            )}
-            <TouchableOpacity onPress={() => openPreferenceModal("activities")}>
-              <Ionicons
-                name="add-circle-outline"
-                size={24}
-                color={colors.primary}
-              />
-            </TouchableOpacity>
+            <View style={styles.preferencesRow}>
+              {userData?.preferences?.activities && (
+                <View style={styles.preferencesContent}>
+                  {userData.preferences.activities.length > 2 ? (
+                    <TouchableOpacity
+                      style={styles.chipSpacing}
+                      onPress={() => openPreferenceModal("activities", "view")}
+                    >
+                      <Chip
+                        label={`View all (${userData.preferences.activities.length})`}
+                      />
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={[styles.chipContainer, styles.chipSpacing]}>
+                      {userData.preferences.activities.map((activity) => (
+                        <Chip key={activity} label={activity} />
+                      ))}
+                    </View>
+                  )}
+                </View>
+              )}
+              <TouchableOpacity
+                onPress={() => openPreferenceModal("activities")}
+              >
+                <Ionicons
+                  name="add-circle-outline"
+                  size={24}
+                  color={colors.primary}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </ProfileSection>
 

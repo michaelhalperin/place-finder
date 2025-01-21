@@ -94,7 +94,6 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    // Launch camera or image picker
     const result = await (useCamera
       ? ImagePicker.launchCameraAsync({
           allowsEditing: true,

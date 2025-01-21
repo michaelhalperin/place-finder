@@ -41,7 +41,6 @@ export const HomeScreen = () => {
     setPlaces(recommendedPlaces);
   }, [userAnswers]);
 
-  // sorting logic
   const sortedPlaces = useMemo(() => {
     return [...places].sort((a, b) => {
       const multiplier = isAscending ? 1 : -1;
