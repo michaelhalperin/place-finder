@@ -11,6 +11,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "../components/Button";
 import { Chip } from "../components/Chip";
@@ -44,6 +45,7 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   );
   const [modalMode, setModalMode] = useState<"edit" | "view">("edit");
   const [tempSelections, setTempSelections] = useState<string[]>([]);
+  const { t } = useTranslation();
 
   const formatPlaceName = (fullAddress: string) => {
     const parts = fullAddress.split(",").map((part) => part.trim());
@@ -151,7 +153,7 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           </Text>
         </View>
 
-        <ProfileSection styles={styles.sectionTitle} title="About You">
+        <ProfileSection styles={styles.sectionTitle} title={t("aboutYou")}>
           {/* <Text style={styles.description}>
             {getPersonalizedDescription(userData?.preferences || {}).text}
           </Text>
@@ -159,16 +161,16 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             .needsQuestionnaire && (
             )} */}
           <Button
-            title="Start Quick Quiz"
+            title={t("startQuickQuiz")}
             onPress={() => navigation.navigate("Questionnaire")}
             variant="secondary"
           />
         </ProfileSection>
 
-        <ProfileSection styles={styles.sectionTitle} title="Preferences">
+        <ProfileSection styles={styles.sectionTitle} title={t("preferences")}>
           <View style={styles.preferenceItem}>
             <View style={styles.preferenceHeader}>
-              <Text style={styles.preferenceLabel}>Food Types</Text>
+              <Text style={styles.preferenceLabel}>{t("foodTypes")}</Text>
             </View>
             <View style={styles.preferencesRow}>
               {userData?.preferences?.foodTypes && (
@@ -179,7 +181,9 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                       onPress={() => openPreferenceModal("foodTypes", "view")}
                     >
                       <Chip
-                        label={`View all (${userData.preferences.foodTypes.length})`}
+                        label={`${t("viewAll")} (${
+                          userData.preferences.foodTypes.length
+                        })`}
                       />
                     </TouchableOpacity>
                   ) : (
@@ -205,7 +209,7 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
           <View style={styles.preferenceItem}>
             <View style={styles.preferenceHeader}>
-              <Text style={styles.preferenceLabel}>Activities</Text>
+              <Text style={styles.preferenceLabel}>{t("activities")}</Text>
             </View>
             <View style={styles.preferencesRow}>
               {userData?.preferences?.activities && (
@@ -216,7 +220,9 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                       onPress={() => openPreferenceModal("activities", "view")}
                     >
                       <Chip
-                        label={`View all (${userData.preferences.activities.length})`}
+                        label={`${t("viewAll")} (${
+                          userData.preferences.activities.length
+                        })`}
                       />
                     </TouchableOpacity>
                   ) : (
@@ -241,7 +247,7 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </ProfileSection>
 
-        <ProfileSection styles={styles.sectionTitle} title="Saved Places">
+        <ProfileSection styles={styles.sectionTitle} title={t("savedPlaces")}>
           {(userData?.settings?.savedPlaces?.length ?? 0) > 0 ? (
             <View style={styles.chipContainer}>
               {userData?.settings?.savedPlaces?.map(
@@ -269,11 +275,11 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
               )}
             </View>
           ) : (
-            <Text style={styles.description}>No saved places yet</Text>
+            <Text style={styles.description}>{t("noSavedPlaces")}</Text>
           )}
         </ProfileSection>
 
-        <ProfileSection styles={styles.sectionTitle} title="Friends">
+        <ProfileSection styles={styles.sectionTitle} title={t("friends")}>
           {userData?.settings?.friends &&
           userData.settings.friends.length > 0 ? (
             <View style={styles.chipContainer}>
@@ -282,26 +288,26 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
               ))}
             </View>
           ) : (
-            <Text style={styles.description}>No friends added yet</Text>
+            <Text style={styles.description}>{t("noFriends")}</Text>
           )}
         </ProfileSection>
 
         <Button
-          title="Edit Profile"
+          title={t("editProfile")}
           onPress={() => navigation.navigate("EditProfile")}
           variant="secondary"
           style={{ margin: theme.spacing.lg }}
         />
         <Button
-          title="Logout"
+          title={t("logout")}
           onPress={() => {
-            Alert.alert("Confirm Logout", "Are you sure you want to logout?", [
+            Alert.alert(t("confirmLogout"), t("areYouSure"), [
               {
-                text: "Cancel",
+                text: t("cancel"),
                 style: "cancel",
               },
               {
-                text: "Logout",
+                text: t("logout"),
                 style: "destructive",
                 onPress: async () => {
                   await logoutUser();
@@ -327,8 +333,8 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>
-                  {modalMode === "view" ? "Selected" : "Select"}{" "}
-                  {modalType === "foodTypes" ? "Food Types" : "Activities"}
+                  {modalMode === "view" ? t("selected") : t("select")}{" "}
+                  {modalType === "foodTypes" ? t("foodTypes") : t("activities")}
                 </Text>
                 <TouchableOpacity onPress={() => setModalVisible(false)}>
                   <Ionicons name="close" size={24} color={colors.text} />

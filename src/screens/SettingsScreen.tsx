@@ -14,6 +14,8 @@ import { useTheme } from "../theme/ThemeContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useLocationContext } from "../context/LocationContext";
 import { createSettingsStyles } from "@/theme/constants";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "../context/LanguageContext";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Settings">;
 
@@ -74,13 +76,14 @@ const SettingsToggle: React.FC<SettingsToggleProps> = ({
 export const SettingsScreen: React.FC<Props> = () => {
   const { isDarkMode, toggleTheme, colors } = useTheme();
   const { isLocationEnabled, setIsLocationEnabled } = useLocationContext();
+  const { t } = useTranslation();
+  const { currentLanguage, changeLanguage } = useLanguage();
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
-  const [selectedLanguage, setSelectedLanguage] = useState("english");
   const [isLanguageModalVisible, setIsLanguageModalVisible] = useState(false);
 
   const languages = [
-    { id: "english", label: "English" },
-    { id: "hebrew", label: "Hebrew" },
+    { id: "en", label: t("english") },
+    { id: "he", label: t("hebrew") },
   ];
 
   const styles = createSettingsStyles(colors);
@@ -88,10 +91,10 @@ export const SettingsScreen: React.FC<Props> = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
-        <SettingsSection title="Appearance" styles={styles}>
+        <SettingsSection title={t("preferences")} styles={styles}>
           <SettingsToggle
-            title="Dark Mode"
-            description="Switch between light and dark theme"
+            title={t("darkMode")}
+            description={t("lightAndDark")}
             value={isDarkMode}
             onValueChange={toggleTheme}
             icon="theme-light-dark"
@@ -105,12 +108,9 @@ export const SettingsScreen: React.FC<Props> = () => {
             <View style={styles.settingInfo}>
               <Icon name="translate" size={24} style={styles.settingIcon} />
               <View style={styles.textContainer}>
-                <Text style={styles.settingTitle}>Language</Text>
+                <Text style={styles.settingTitle}>{t("language")}</Text>
                 <Text style={styles.settingDescription}>
-                  {
-                    languages.find((lang) => lang.id === selectedLanguage)
-                      ?.label
-                  }
+                  {languages.find((lang) => lang.id === currentLanguage)?.label}
                 </Text>
               </View>
             </View>
@@ -140,17 +140,17 @@ export const SettingsScreen: React.FC<Props> = () => {
                   key={language.id}
                   style={[
                     styles.languageOption,
-                    selectedLanguage === language.id && styles.selectedLanguage,
+                    currentLanguage === language.id && styles.selectedLanguage,
                   ]}
                   onPress={() => {
-                    setSelectedLanguage(language.id);
+                    changeLanguage(language.id);
                     setIsLanguageModalVisible(false);
                   }}
                 >
                   <Text style={[styles.languageText, { color: colors.text }]}>
                     {language.label}
                   </Text>
-                  {selectedLanguage === language.id && (
+                  {currentLanguage === language.id && (
                     <Icon name="check" size={20} style={styles.checkIcon} />
                   )}
                 </TouchableOpacity>
@@ -159,10 +159,10 @@ export const SettingsScreen: React.FC<Props> = () => {
           </TouchableOpacity>
         </Modal>
 
-        <SettingsSection title="Privacy" styles={styles}>
+        <SettingsSection title={t("privacy")} styles={styles}>
           <SettingsToggle
-            title="Push Notifications"
-            description="Receive updates and recommendations"
+            title={t("pushNotifications")}
+            description={t("recieveUpdates")}
             value={isNotificationsEnabled}
             onValueChange={setIsNotificationsEnabled}
             icon="bell-outline"
@@ -170,8 +170,8 @@ export const SettingsScreen: React.FC<Props> = () => {
             styles={styles}
           />
           <SettingsToggle
-            title="Location Services"
-            description="Enable location-based features"
+            title={t("locationServices")}
+            description={t("enableLocation")}
             value={isLocationEnabled}
             onValueChange={setIsLocationEnabled}
             icon="map-marker-outline"
@@ -180,8 +180,8 @@ export const SettingsScreen: React.FC<Props> = () => {
           />
         </SettingsSection>
 
-        <SettingsSection title="About" styles={styles}>
-          <TouchableOpacity style={styles.linkItem}>
+        <SettingsSection title={t("about")} styles={styles}>
+          {/* <TouchableOpacity style={styles.linkItem}>
             <View style={styles.settingInfo}>
               <Icon
                 name="information-outline"
@@ -191,7 +191,7 @@ export const SettingsScreen: React.FC<Props> = () => {
               <Text style={styles.settingTitle}>Version 1.0.0</Text>
             </View>
             <Icon name="chevron-right" size={24} style={styles.chevron} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.linkItem}>
             <View style={styles.settingInfo}>
               <Icon
@@ -199,7 +199,7 @@ export const SettingsScreen: React.FC<Props> = () => {
                 size={24}
                 style={styles.settingIcon}
               />
-              <Text style={styles.settingTitle}>Privacy Policy</Text>
+              <Text style={styles.settingTitle}>{t("privacy")}</Text>
             </View>
             <Icon name="chevron-right" size={24} style={styles.chevron} />
           </TouchableOpacity>
@@ -210,7 +210,7 @@ export const SettingsScreen: React.FC<Props> = () => {
                 size={24}
                 style={styles.settingIcon}
               />
-              <Text style={styles.settingTitle}>Help & Support</Text>
+              <Text style={styles.settingTitle}>{t("helpAndSupport")}</Text>
             </View>
             <Icon name="chevron-right" size={24} style={styles.chevron} />
           </TouchableOpacity>

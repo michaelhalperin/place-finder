@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { View, Text, ScrollView, SafeAreaView, Animated } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useTranslation } from "react-i18next";
 import { QuestionCard } from "../components/QuestionCard";
 import { Button } from "../components/Button";
 import { useTheme } from "../theme/ThemeContext";
@@ -11,6 +12,7 @@ import { INITIAL_QUESTIONS } from "@/utils/questions";
 type Props = NativeStackScreenProps<RootStackParamList, "Questionnaire">;
 
 export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const styles = createQuestionnaireStyles(colors);
   const [currentQuestionId, setCurrentQuestionId] = useState("q1");
@@ -20,7 +22,6 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleAnswer = (questionId: string, optionId: string) => {
-    // Update the answer
     setAnswers((prev) => ({
       ...prev,
       [questionId]: optionId,
@@ -35,7 +36,6 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
       const nextQuestionId = Object.keys(selectedOption.nextQuestions)[0];
       const nextQuestion = selectedOption.nextQuestions[nextQuestionId];
 
-      // Animation
       Animated.sequence([
         Animated.spring(scaleAnim, {
           toValue: 0.95,
@@ -49,12 +49,10 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
         }),
       ]).start();
 
-      // Remove all questions after the current question
       setQuestions((prev) => {
         const currentIndex = prev.findIndex((q) => q.id === questionId);
         const updatedQuestions = prev.slice(0, currentIndex + 1);
 
-        // Add the new next question if it's not already there
         if (!updatedQuestions.find((q) => q.id === nextQuestion.id)) {
           updatedQuestions.push(nextQuestion);
         }
@@ -64,7 +62,6 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
 
       setCurrentQuestionId(nextQuestion.id);
 
-      // Remove answers for questions that were removed
       setAnswers((prev) => {
         const newAnswers = { ...prev };
         Object.keys(newAnswers).forEach((key) => {
@@ -75,7 +72,6 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
         return newAnswers;
       });
 
-      // Scroll to new question
       setTimeout(() => {
         scrollViewRef.current?.scrollToEnd({
           animated: true,
@@ -90,12 +86,12 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Customize Your Experience</Text>
+          <Text style={styles.title}>{t("customizeExperience")}</Text>
           <View style={styles.progressContainer}>
             <View style={[styles.progressBar, { width: `${progress}%` }]} />
           </View>
           <Text style={styles.progressText}>
-            {Object.keys(answers).length} of 5 answered
+            {Object.keys(answers).length} {t("of")} 5 {t("answered")}
           </Text>
         </View>
 
@@ -130,7 +126,7 @@ export const QuestionnaireScreen: React.FC<Props> = ({ navigation }) => {
 
         <View style={styles.buttonContainer}>
           <Button
-            title="Continue"
+            title={t("continue")}
             onPress={() =>
               navigation.navigate("Profile", {
                 userAnswers: answers,

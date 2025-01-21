@@ -13,10 +13,12 @@ import { useSortContext } from "../context/SortContext";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { mockPlaces } from "../utils/mockPlaces";
 import { useLocationContext } from "@/context/LocationContext";
+import { useTranslation } from "react-i18next";
 
 type HomeScreenRouteProp = RouteProp<RootStackParamList, "User">;
 
 export const HomeScreen = () => {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const [places, setPlaces] = useState<Activity[]>([]);
   const {
@@ -66,35 +68,28 @@ export const HomeScreen = () => {
   const isLoading = false;
 
   const handleEnableLocation = () => {
-    Alert.alert(
-      "Location Services Disabled",
-      "This app needs access to location services for better experience. Would you like to enable it?",
-      [
-        {
-          text: "Not Now",
-          style: "cancel",
-        },
-        {
-          text: "Enable",
-          onPress: () => setIsLocationEnabled(true),
-        },
-      ]
-    );
+    Alert.alert(t("locationServicesDisabled"), t("locationServicesMessage"), [
+      {
+        text: t("notNow"),
+        style: "cancel",
+      },
+      {
+        text: t("enable"),
+        onPress: () => setIsLocationEnabled(true),
+      },
+    ]);
   };
 
   return (
     <View style={styles.container}>
       {locationError ? (
         <View style={[styles.container, styles.indicator]}>
-          <Text style={[styles.errorText, { marginBottom: 16 }]}>
-            {locationError}
-          </Text>
           <TouchableOpacity
             onPress={handleEnableLocation}
             style={styles.enableButton}
           >
             <Text style={styles.enableButtonText}>
-              Enable Location Services
+              {t("enableLocationServices")}
             </Text>
           </TouchableOpacity>
         </View>
