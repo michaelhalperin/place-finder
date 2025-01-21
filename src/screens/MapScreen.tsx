@@ -11,6 +11,7 @@ import { FAB, TextInput } from "react-native-paper";
 import axios from "axios";
 import { useRoute, RouteProp, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from "react-i18next";
 
 import { useFavorites } from "@/context/FavoritesContext";
 import { createMapStyles } from "@/theme/constants";
@@ -39,6 +40,7 @@ export const MapScreen = () => {
   const { setIsLocationEnabled } = useLocationContext();
   const { refreshUserData } = useUserDataRefresh();
   const [shouldRefresh, setShouldRefresh] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (route.params?.latitude && route.params?.longitude) {
@@ -126,7 +128,7 @@ export const MapScreen = () => {
       );
 
       if (response.data.length === 0) {
-        Alert.alert("No Results", "No places found for your search.");
+        Alert.alert(t("noResults"), t("noPlacesFound"));
       } else {
         const firstPlace = response.data[0];
         const newPlace = {
@@ -174,7 +176,7 @@ export const MapScreen = () => {
       const token = await AsyncStorage.getItem("userToken");
 
       if (!userId || !token) {
-        Alert.alert("Error", "Please log in to save locations");
+        Alert.alert(t("error"), t("pleaseLoginToSave"));
         return;
       }
 
@@ -200,7 +202,7 @@ export const MapScreen = () => {
           longitude: place.longitude,
           title: place.title,
         });
-        Alert.alert("Success", "Location saved to favorites!");
+        Alert.alert(t("success"), t("locationSaved"));
         setShouldRefresh(true);
       } else {
         throw new Error("Failed to save location");
@@ -208,9 +210,9 @@ export const MapScreen = () => {
     } catch (error) {
       console.error("Error saving place:", error);
       if (axios.isAxiosError(error) && error.response?.status === 401) {
-        Alert.alert("Error", "Please log in again to save locations");
+        Alert.alert(t("error"), t("pleaseLoginAgain"));
       } else {
-        Alert.alert("Error", "Failed to save location. Please try again.");
+        Alert.alert(t("error"), t("failedToSaveLocation"));
       }
     }
   };
@@ -225,50 +227,37 @@ export const MapScreen = () => {
       return;
     }
 
-    Alert.alert(
-      "Save Location",
-      "Would you like to save this location to favorites?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Save",
-          onPress: () => handleSavedMarkedPlaces(place),
-        },
-      ]
-    );
+    Alert.alert(t("saveLocation"), t("saveLocationConfirm"), [
+      { text: t("cancel"), style: "cancel" },
+      {
+        text: t("save"),
+        onPress: () => handleSavedMarkedPlaces(place),
+      },
+    ]);
   };
 
   const handleEnableLocation = () => {
-    Alert.alert(
-      "Location Services Disabled",
-      "This app needs access to location services for better experience. Would you like to enable it?",
-      [
-        {
-          text: "Not Now",
-          style: "cancel",
-        },
-        {
-          text: "Enable",
-          onPress: () => setIsLocationEnabled(true),
-        },
-      ]
-    );
+    Alert.alert(t("locationServicesDisabled"), t("locationServicesMessage"), [
+      {
+        text: t("notNow"),
+        style: "cancel",
+      },
+      {
+        text: t("enable"),
+        onPress: () => setIsLocationEnabled(true),
+      },
+    ]);
   };
 
   if (error) {
     return (
       <View style={[styles.container, styles.indicator]}>
-        <Text
-          style={[styles.errorText, { color: colors.error, marginBottom: 16 }]}
-        >
-          {error}
-        </Text>
         <TouchableOpacity
           onPress={handleEnableLocation}
           style={[styles.enableButton, { backgroundColor: colors.primary }]}
         >
           <Text style={[styles.enableButtonText, { color: colors.background }]}>
-            Enable Location Services
+            {t("enableLocationServices")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -294,7 +283,7 @@ export const MapScreen = () => {
       <FAB style={styles.fab} icon="crosshairs-gps" onPress={centerOnUser} />
       <TextInput
         style={[styles.searchBar, { color: colors.text }]}
-        placeholder="Search for places"
+        placeholder={t("searchPlaces")}
         placeholderTextColor={colors.textSecondary}
         value={search}
         textColor={colors.text}

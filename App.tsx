@@ -6,6 +6,8 @@ import { ThemeProvider } from "./src/theme/ThemeContext";
 import { SortProvider } from "./src/context/SortContext";
 import { LocationProvider } from "./src/context/LocationContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
+import { LanguageProvider } from "./src/context/LanguageContext";
+// import "./src/utils/i18n";
 
 export default function App() {
   return (
@@ -15,7 +17,9 @@ export default function App() {
           <LocationProvider>
             <SortProvider>
               <StatusBar style="auto" />
-              <AppNavigator />
+              <LanguageProvider>
+                <AppNavigator />
+              </LanguageProvider>
             </SortProvider>
           </LocationProvider>
         </NavigationContainer>

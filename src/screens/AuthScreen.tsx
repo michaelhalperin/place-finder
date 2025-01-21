@@ -126,7 +126,7 @@ export const AuthScreen: React.FC<Props> = ({ navigation }) => {
         />
         <Text style={styles.link} onPress={() => setIsLogin(!isLogin)}>
           {isLogin
-            ? "Don't have an account? Sign up"
+            ? "Don't have an account? Register"
             : "Already have an account? Sign in"}
         </Text>
       </View>

@@ -18,6 +18,7 @@ import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { updateUserSettings, getUserProfile } from "../api/backApi";
 import { useUserDataRefresh } from "@/hooks/useUserDataRefresh";
+import { useTranslation } from "react-i18next";
 
 type Props = NativeStackScreenProps<RootStackParamList, "EditProfile">;
 
@@ -28,6 +29,7 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
   const { colors } = useTheme();
   const styles = createProfileStyles(colors);
   const { refreshUserData } = useUserDataRefresh();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchUserData();
@@ -87,9 +89,10 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
 
     if (!permissionResult.granted) {
       Alert.alert(
-        "Permission Required",
-        "Please grant permission to access the " +
-          (useCamera ? "camera" : "photo library")
+        t("permissionRequired"),
+        t("pleaseGrantPermission", {
+          type: useCamera ? t("camera") : t("photoLibrary"),
+        })
       );
       return;
     }
@@ -112,10 +115,10 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const showImageOptions = () => {
-    Alert.alert("Change Profile Picture", "Choose an option", [
-      { text: "Take Photo", onPress: () => pickImage(true) },
-      { text: "Choose from Library", onPress: () => pickImage(false) },
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("changeProfilePicture"), t("chooseOption"), [
+      { text: t("takePhoto"), onPress: () => pickImage(true) },
+      { text: t("chooseFromLibrary"), onPress: () => pickImage(false) },
+      { text: t("cancel"), style: "cancel" },
     ]);
   };
 
@@ -123,7 +126,7 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
     <SafeAreaContainer>
       <ContentContainer scrollable>
         <View style={styles.header}>
-          <Text style={styles.sectionTitle}>Edit Profile</Text>
+          <Text style={styles.sectionTitle}>{t("editProfile")}</Text>
         </View>
 
         <TouchableOpacity
@@ -136,33 +139,37 @@ export const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
             }
             style={styles.profileImage}
           />
-          <Text style={styles.changePhotoText}>Change Photo</Text>
+          <Text style={styles.changePhotoText}>{t("changePhoto")}</Text>
         </TouchableOpacity>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Name</Text>
+          <Text style={styles.label}>{t("name")}</Text>
           <TextInput
             style={styles.input}
             value={name}
             onChangeText={setName}
-            placeholder="Enter your name"
+            placeholder={t("enterYourName")}
           />
 
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>{t("email")}</Text>
           <TextInput
             style={styles.input}
             value={email}
             onChangeText={setEmail}
-            placeholder="Enter your email"
+            placeholder={t("enterYourEmail")}
             keyboardType="email-address"
             autoCapitalize="none"
           />
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button title="Save Changes" onPress={handleSave} variant="primary" />
           <Button
-            title="Cancel"
+            title={t("saveChanges")}
+            onPress={handleSave}
+            variant="primary"
+          />
+          <Button
+            title={t("cancel")}
             onPress={() => navigation.goBack()}
             variant="secondary"
           />
