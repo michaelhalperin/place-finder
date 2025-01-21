@@ -62,7 +62,6 @@ export const MapScreen = () => {
           }));
 
           setPlaces((prevPlaces) => {
-            // Combine existing unsaved places with saved places
             const unsavedPlaces = prevPlaces.filter((p) => !p.saved);
             return [...unsavedPlaces, ...savedPlaces];
           });
@@ -169,6 +168,53 @@ export const MapScreen = () => {
     }
   };
 
+  const handleSavedMarkedPlaces = async (place: any) => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      const token = await AsyncStorage.getItem("userToken");
+
+      if (!userId || !token) {
+        Alert.alert("Error", "Please log in to save locations");
+        return;
+      }
+
+      const response = await updateUserSettings(userId, {
+        place: {
+          latitude: place.latitude,
+          longitude: place.longitude,
+          title: place.title,
+        },
+        action: "addPlace",
+      });
+
+      if (response.status === 200) {
+        setPlaces(
+          places.map((p) =>
+            p.latitude === place.latitude && p.longitude === place.longitude
+              ? { ...p, saved: true }
+              : p
+          )
+        );
+        addFavorite({
+          latitude: place.latitude,
+          longitude: place.longitude,
+          title: place.title,
+        });
+        Alert.alert("Success", "Location saved to favorites!");
+        setShouldRefresh(true);
+      } else {
+        throw new Error("Failed to save location");
+      }
+    } catch (error) {
+      console.error("Error saving place:", error);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        Alert.alert("Error", "Please log in again to save locations");
+      } else {
+        Alert.alert("Error", "Failed to save location. Please try again.");
+      }
+    }
+  };
+
   const handleMarkerPress = async (place: {
     latitude: number;
     longitude: number;
@@ -186,56 +232,7 @@ export const MapScreen = () => {
         { text: "Cancel", style: "cancel" },
         {
           text: "Save",
-          onPress: async () => {
-            try {
-              const userId = await AsyncStorage.getItem("userId");
-              const token = await AsyncStorage.getItem("userToken");
-
-              if (!userId || !token) {
-                Alert.alert("Error", "Please log in to save locations");
-                return;
-              }
-
-              const response = await updateUserSettings(userId, {
-                place: {
-                  latitude: place.latitude,
-                  longitude: place.longitude,
-                  title: place.title,
-                },
-                action: "addPlace",
-              });
-
-              if (response.status === 200) {
-                setPlaces(
-                  places.map((p) =>
-                    p.latitude === place.latitude &&
-                    p.longitude === place.longitude
-                      ? { ...p, saved: true }
-                      : p
-                  )
-                );
-                addFavorite({
-                  latitude: place.latitude,
-                  longitude: place.longitude,
-                  title: place.title,
-                });
-                Alert.alert("Success", "Location saved to favorites!");
-                setShouldRefresh(true);
-              } else {
-                throw new Error("Failed to save location");
-              }
-            } catch (error) {
-              console.error("Error saving place:", error);
-              if (axios.isAxiosError(error) && error.response?.status === 401) {
-                Alert.alert("Error", "Please log in again to save locations");
-              } else {
-                Alert.alert(
-                  "Error",
-                  "Failed to save location. Please try again."
-                );
-              }
-            }
-          },
+          onPress: () => handleSavedMarkedPlaces(place),
         },
       ]
     );

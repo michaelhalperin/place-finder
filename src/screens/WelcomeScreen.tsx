@@ -13,18 +13,15 @@ export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const fadeAnim = new Animated.Value(1);
 
   useEffect(() => {
-    // Wait 5 seconds before starting any animations
     const timer = setTimeout(() => {
-      // Start fade out animation
       Animated.timing(fadeAnim, {
         toValue: 0,
-        duration: 250,
+        duration: 200,
         useNativeDriver: true,
       }).start(() => {
-        // Only navigate after fade out is complete
         navigation.navigate("Home", {});
       });
-    }, 1000);
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [navigation, fadeAnim]);

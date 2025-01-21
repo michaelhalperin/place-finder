@@ -1,7 +1,12 @@
 export const generateMapHTML = (
   latitude: number | null,
   longitude: number | null,
-  places: { latitude: number; longitude: number; title: string; saved?: boolean }[]
+  places: {
+    latitude: number;
+    longitude: number;
+    title: string;
+    saved?: boolean;
+  }[]
 ) => `
     <!DOCTYPE html>
     <html>
@@ -45,7 +50,9 @@ export const generateMapHTML = (
               (place) => `
             L.marker([${place.latitude}, ${place.longitude}], {
               icon: new L.Icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${place.saved ? 'green' : 'red'}.png',
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${
+                  place.saved ? "green" : "red"
+                }.png',
                 shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
@@ -60,8 +67,6 @@ export const generateMapHTML = (
                 }));
               })
               .addTo(map);
-
-            map.setView([${place.latitude}, ${place.longitude}], 13);
           `
             )
             .join("")}

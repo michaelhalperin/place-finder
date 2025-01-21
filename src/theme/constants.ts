@@ -53,6 +53,11 @@ export const createProfileStyles = (colors: any) =>
       justifyContent: "space-between",
       paddingVertical: theme.spacing.sm,
     },
+    preferencesRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
     preferenceValue: {
       color: colors.primary,
     },
@@ -60,6 +65,9 @@ export const createProfileStyles = (colors: any) =>
       flexDirection: "row",
       flexWrap: "wrap",
       marginBottom: theme.spacing.sm,
+    },
+    chipSpacing: {
+      marginTop: theme.spacing.sm,
     },
     header: {
       alignItems: "center",
