@@ -24,7 +24,6 @@ import { theme } from "@/theme";
 import { useTheme } from "@/theme/ThemeContext";
 import { createProfileStyles } from "../theme/constants";
 import { RootStackParamList, User } from "../types/types";
-// import { getPersonalizedDescription } from "@/utils/recommendations";
 import {
   logoutUser,
   deleteSavedPlace,
@@ -32,6 +31,7 @@ import {
   updateUserSettings,
 } from "@/api/backApi";
 import { FoodTypes, Activities } from "@/utils/preferences";
+import { getPersonalizedRecommendationsByGPT } from "@/api/gpt";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
@@ -46,6 +46,8 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const [modalMode, setModalMode] = useState<"edit" | "view">("edit");
   const [tempSelections, setTempSelections] = useState<string[]>([]);
   const { t } = useTranslation();
+  const [personalizedDescription, setPersonalizedDescription] =
+    useState<string>("");
 
   const formatPlaceName = (fullAddress: string) => {
     const parts = fullAddress.split(",").map((part) => part.trim());
@@ -72,6 +74,15 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       console.error("Error fetching user data:", error);
     }
   }, []);
+
+  const fetchPersonalizedDescription = useCallback(async () => {
+    if (userData?.preferences) {
+      const descriptions = await getPersonalizedRecommendationsByGPT(
+        userData.preferences
+      );
+      setPersonalizedDescription(descriptions.join(" • "));
+    }
+  }, [userData?.preferences]);
 
   const handleDeletePlace = async (placeId: string) => {
     try {
@@ -131,7 +142,7 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       fetchUserData();
-    }, [fetchUserData])
+    }, [fetchUserData, fetchPersonalizedDescription])
   );
 
   return (
@@ -154,17 +165,29 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         <ProfileSection styles={styles.sectionTitle} title={t("aboutYou")}>
-          {/* <Text style={styles.description}>
-            {getPersonalizedDescription(userData?.preferences || {}).text}
-          </Text>
-          {getPersonalizedDescription(userData?.preferences || {})
-            .needsQuestionnaire && (
-            )} */}
-          <Button
-            title={t("startQuickQuiz")}
-            onPress={() => navigation.navigate("Questionnaire")}
-            variant="secondary"
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={styles.description}>{personalizedDescription}</Text>
+            {userData?.preferences?.foodTypes?.length ||
+            userData?.preferences?.activities?.length ? (
+              <TouchableOpacity onPress={fetchPersonalizedDescription}>
+                <Ionicons name="refresh" size={24} color={colors.primary} />
+              </TouchableOpacity>
+            ) : null}
+          </View>
+          {!userData?.preferences?.foodTypes?.length &&
+            !userData?.preferences?.activities?.length && (
+              <Button
+                title={t("startQuickQuiz")}
+                onPress={() => navigation.navigate("Questionnaire")}
+                variant="secondary"
+              />
+            )}
         </ProfileSection>
 
         <ProfileSection styles={styles.sectionTitle} title={t("preferences")}>
